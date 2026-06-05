@@ -2,6 +2,7 @@
 import { useEffect } from 'react';
 import { connectSocket } from '@/lib/socket';
 import { useGameStore } from '@/store/gameStore';
+import type { RoomPublic, Player, QuestionPublic } from '@/types';
 
 export function useGameSocket() {
   useEffect(() => {
@@ -16,7 +17,7 @@ export function useGameSocket() {
 
       if (spectating && !myPlayer) {
         // Spectator reconnect — re-watch without joining
-        socket.emit('room:watch', { code: room.code }, (err: string | null, data?: { room: import('@/types').RoomPublic; question: import('@/types').QuestionPublic | null; roundNumber: number; timeLimit: number }) => {
+        socket.emit('room:watch', { code: room.code }, (err: string | null, data?: { room: RoomPublic; question: QuestionPublic | null; roundNumber: number; timeLimit: number }) => {
           if (!data) return;
           const store = useGameStore.getState();
           store.setRoom(data.room);
@@ -28,7 +29,7 @@ export function useGameSocket() {
       }
 
       if (!myPlayer) return;
-      socket.emit('room:rejoin', { code: room.code, playerName: myPlayer.name }, (err: string | null, data?: { room: import('@/types').RoomPublic; player: import('@/types').Player; question: import('@/types').QuestionPublic | null; roundNumber: number; timeLimit: number }) => {
+      socket.emit('room:rejoin', { code: room.code, playerName: myPlayer.name }, (err: string | null, data?: { room: RoomPublic; player: Player; question: QuestionPublic | null; roundNumber: number; timeLimit: number }) => {
         if (!data) return;
         const store = useGameStore.getState();
         store.setRoom(data.room);

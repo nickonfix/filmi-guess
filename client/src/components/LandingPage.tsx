@@ -3,9 +3,8 @@ import { useState, useEffect } from 'react';
 import { useRouter } from 'next/navigation';
 import { connectSocket } from '@/lib/socket';
 import { useGameStore } from '@/store/gameStore';
+import { getSavedName, saveName } from '@/lib/playerName';
 import type { RoomPublic, Player } from '@/types';
-
-const NAME_KEY = 'filmiGuess_name';
 
 export default function LandingPage() {
   const router = useRouter();
@@ -14,7 +13,7 @@ export default function LandingPage() {
   const [roomCode, setRoomCode] = useState('');
 
   useEffect(() => {
-    const saved = localStorage.getItem(NAME_KEY);
+    const saved = getSavedName();
     if (saved) setPlayerName(saved);
   }, []);
   const [mode, setMode] = useState<'home' | 'create' | 'join'>('home');
@@ -26,7 +25,7 @@ export default function LandingPage() {
     if (!name) { setError('Enter your name first'); return; }
     setLoading(true);
     setError('');
-    localStorage.setItem(NAME_KEY, name);
+    saveName(name);
     store.reset();
     const socket = connectSocket();
     socket.emit('room:create', name, (data: { code: string; room: RoomPublic; player: Player }) => {
@@ -42,7 +41,7 @@ export default function LandingPage() {
     if (!roomCode.trim()) { setError('Enter a room code'); return; }
     setLoading(true);
     setError('');
-    localStorage.setItem(NAME_KEY, name);
+    saveName(name);
     store.reset();
     const socket = connectSocket();
     socket.emit('room:join', { code: roomCode.toUpperCase().trim(), playerName: name }, (err: string | null, data?: { room: RoomPublic; player: Player }) => {

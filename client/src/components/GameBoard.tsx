@@ -1,13 +1,13 @@
 'use client';
+import { useState, useEffect } from 'react';
 import { useGameStore } from '@/store/gameStore';
 import { getSocket } from '@/lib/socket';
+import { getSavedName } from '@/lib/playerName';
 import AnswerInput from './AnswerInput';
 import PlayerList from './PlayerList';
 import ChatPanel from './ChatPanel';
 import clsx from 'clsx';
 import type { Player, QuestionPublic, RoomPublic } from '@/types';
-
-const NAME_KEY = 'filmiGuess_name';
 
 const CATEGORY_LABELS: Record<string, string> = {
   bollywood_actor: 'Bollywood Actor',
@@ -24,12 +24,16 @@ const DIFFICULTY_COLORS: Record<string, string> = {
 
 function JoinGameBanner() {
   const store = useGameStore();
+  const [savedName, setSavedName] = useState('');
+
+  useEffect(() => {
+    setSavedName(getSavedName());
+  }, []);
 
   function joinGame() {
-    const name = localStorage.getItem(NAME_KEY) || '';
     const room = store.room;
-    if (!name || !room) return;
-    getSocket().emit('room:rejoin', { code: room.code, playerName: name }, (err: string | null, data?: { room: RoomPublic; player: Player; question: QuestionPublic | null; roundNumber: number; timeLimit: number }) => {
+    if (!savedName || !room) return;
+    getSocket().emit('room:rejoin', { code: room.code, playerName: savedName }, (err: string | null, data?: { room: RoomPublic; player: Player; question: QuestionPublic | null; roundNumber: number; timeLimit: number }) => {
       if (err || !data) return;
       store.setRoom(data.room);
       store.setMyPlayer(data.player);
@@ -42,7 +46,7 @@ function JoinGameBanner() {
 
   return (
     <div className="fixed bottom-0 inset-x-0 z-50 bg-brand-dark/95 backdrop-blur border-t border-brand-border px-4 py-3 flex items-center justify-between gap-4">
-      <p className="text-sm text-gray-400">You're watching as <span className="text-white font-semibold">{localStorage.getItem(NAME_KEY) || '...'}</span></p>
+      <p className="text-sm text-gray-400">You&apos;re watching as <span className="text-white font-semibold">{savedName || '...'}</span></p>
       <button
         onClick={joinGame}
         className="bg-brand-orange hover:bg-orange-500 text-white font-bold px-6 py-2 rounded-xl text-sm transition-all hover:scale-[1.02] active:scale-[0.98] flex-shrink-0"

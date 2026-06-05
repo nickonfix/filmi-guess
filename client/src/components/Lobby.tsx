@@ -2,9 +2,8 @@
 import { useState, useEffect } from 'react';
 import { getSocket } from '@/lib/socket';
 import { useGameStore } from '@/store/gameStore';
-import type { RoomPublic, Player } from '@/types';
-
-const NAME_KEY = 'filmiGuess_name';
+import { getSavedName } from '@/lib/playerName';
+import type { RoomPublic, Player, QuestionPublic } from '@/types';
 
 interface Props {
   room: RoomPublic;
@@ -16,6 +15,11 @@ export default function Lobby({ room, myPlayer }: Props) {
   const { spectating } = store;
   const [copied, setCopied] = useState(false);
   const [shareUrl, setShareUrl] = useState('');
+  const [savedName, setSavedName] = useState('');
+
+  useEffect(() => {
+    setSavedName(getSavedName());
+  }, []);
 
   useEffect(() => {
     fetch('/api/local-ip')
@@ -40,9 +44,8 @@ export default function Lobby({ room, myPlayer }: Props) {
   }
 
   function joinGame() {
-    const name = localStorage.getItem(NAME_KEY) || '';
-    if (!name) return;
-    getSocket().emit('room:rejoin', { code: room.code, playerName: name }, (err: string | null, data?: { room: RoomPublic; player: Player; question: import('@/types').QuestionPublic | null; roundNumber: number; timeLimit: number }) => {
+    if (!savedName) return;
+    getSocket().emit('room:rejoin', { code: room.code, playerName: savedName }, (err: string | null, data?: { room: RoomPublic; player: Player; question: QuestionPublic | null; roundNumber: number; timeLimit: number }) => {
       if (err || !data) return;
       store.setRoom(data.room);
       store.setMyPlayer(data.player);
@@ -111,7 +114,7 @@ export default function Lobby({ room, myPlayer }: Props) {
         {spectating ? (
           <div className="space-y-3">
             <div className="text-center py-3 text-gray-400 text-sm bg-brand-card border border-brand-border rounded-xl">
-              You're watching as <span className="text-white font-semibold">{localStorage.getItem(NAME_KEY) || '...'}</span>
+              You&apos;re watching as <span className="text-white font-semibold">{savedName || '...'}</span>
             </div>
             <button
               onClick={joinGame}

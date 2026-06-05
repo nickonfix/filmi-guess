@@ -97,8 +97,9 @@ export function handleAnswer(io: Server, room: Room, playerId: string, answer: s
 
   io.to(room.code).emit('game:correct_answer', winner);
 
-  // If all players answered, end early
-  if (room.roundWinners.length >= room.players.size) {
+  // End early when all connected players have answered
+  const connected = [...room.players.values()].filter(p => !p.disconnected).length;
+  if (room.roundWinners.length >= connected) {
     if (room.timer) { clearInterval(room.timer); room.timer = null; }
     endRound(io, room);
   }

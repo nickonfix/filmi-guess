@@ -3,12 +3,11 @@ import { useState, useEffect } from 'react';
 import { useGameSocket } from '@/hooks/useGameSocket';
 import { connectSocket } from '@/lib/socket';
 import { useGameStore } from '@/store/gameStore';
+import { getSavedName, saveName } from '@/lib/playerName';
 import type { RoomPublic, QuestionPublic } from '@/types';
 import Lobby from './Lobby';
 import GameBoard from './GameBoard';
 import FinalLeaderboard from './FinalLeaderboard';
-
-const NAME_KEY = 'filmiGuess_name';
 
 function JoinViaLink({ code }: { code: string }) {
   const [name, setName] = useState('');
@@ -17,7 +16,7 @@ function JoinViaLink({ code }: { code: string }) {
   const store = useGameStore();
 
   useEffect(() => {
-    const saved = localStorage.getItem(NAME_KEY);
+    const saved = getSavedName();
     if (saved) setName(saved);
   }, []);
 
@@ -26,7 +25,7 @@ function JoinViaLink({ code }: { code: string }) {
     if (!trimmed) { setError('Enter your name'); return; }
     setLoading(true);
     setError('');
-    localStorage.setItem(NAME_KEY, trimmed);
+    saveName(trimmed);
     store.reset();
     const socket = connectSocket();
     socket.emit('room:watch', { code }, (err: string | null, data?: { room: RoomPublic; question: QuestionPublic | null; roundNumber: number; timeLimit: number }) => {
