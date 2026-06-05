@@ -171,6 +171,34 @@ export default function LandingPage() {
           No signup needed · Up to 50 players · Free forever
         </p>
       </div>
+
+      {/* SEO content — visible to crawlers, subtle to users */}
+      <section className="relative z-10 w-full max-w-2xl mt-16 px-4 pb-12 text-center">
+        <h2 className="text-gray-600 text-sm font-semibold uppercase tracking-widest mb-6">How it works</h2>
+        <div className="grid grid-cols-1 sm:grid-cols-3 gap-6 text-left">
+          <div className="bg-brand-card border border-brand-border rounded-xl p-4">
+            <div className="text-2xl mb-2">🎮</div>
+            <h3 className="text-white font-bold text-sm mb-1">Create a Room</h3>
+            <p className="text-gray-500 text-xs leading-relaxed">Enter your name and create a private room. Share the link with friends on WhatsApp or anywhere.</p>
+          </div>
+          <div className="bg-brand-card border border-brand-border rounded-xl p-4">
+            <div className="text-2xl mb-2">🖼️</div>
+            <h3 className="text-white font-bold text-sm mb-1">Guess the Star</h3>
+            <p className="text-gray-500 text-xs leading-relaxed">A photo appears — type the Bollywood actor, Hindi movie title, or South Indian star as fast as you can.</p>
+          </div>
+          <div className="bg-brand-card border border-brand-border rounded-xl p-4">
+            <div className="text-2xl mb-2">🏆</div>
+            <h3 className="text-white font-bold text-sm mb-1">Win Points</h3>
+            <p className="text-gray-500 text-xs leading-relaxed">Faster answers earn more points. Build streaks for bonus multipliers. The top scorer at the end wins!</p>
+          </div>
+        </div>
+
+        <p className="text-gray-700 text-xs mt-8 leading-relaxed max-w-lg mx-auto">
+          FilmiGuess is the best free online multiplayer Bollywood quiz game. Test your knowledge of Indian cinema —
+          from classic Hindi films to modern Bollywood blockbusters, South Indian superstars, and everything in between.
+          Play with up to 50 friends, no account needed.
+        </p>
+      </section>
     </main>
   );
 }
