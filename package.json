@@ -1,0 +1,7 @@
+{
+  "name": "filmiguess-tunnel",
+  "private": true,
+  "dependencies": {
+    "localtunnel": "^2.0.2"
+  }
+}
