@@ -22,14 +22,7 @@ export default function Lobby({ room, myPlayer }: Props) {
   }, []);
 
   useEffect(() => {
-    fetch('/api/local-ip')
-      .then(r => r.json())
-      .then(({ ip }: { ip: string }) => {
-        setShareUrl(`http://${ip}:3000/room/${room.code}`);
-      })
-      .catch(() => {
-        setShareUrl(`${window.location.origin}/room/${room.code}`);
-      });
+    setShareUrl(`${window.location.origin}/room/${room.code}`);
   }, [room.code]);
 
   function copyLink() {
@@ -71,7 +64,7 @@ export default function Lobby({ room, myPlayer }: Props) {
           >
             {copied ? '✓ Copied!' : '🔗 Copy invite link'}
           </button>
-          <p className="text-gray-600 text-xs mt-3">Friends on the same WiFi can join using this link</p>
+          <p className="text-gray-600 text-xs mt-3">Share this link with friends anywhere — works worldwide</p>
         </div>
 
         {/* Players list */}

@@ -4,7 +4,8 @@ const nextConfig = {
     remotePatterns: [
       { protocol: 'https', hostname: 'upload.wikimedia.org' },
     ],
-    // Images are loaded directly by the browser (unoptimized), so no server-side proxy needed
+    // No server-side image optimization on Cloudflare Pages edge runtime
+    unoptimized: true,
   },
 };
 
