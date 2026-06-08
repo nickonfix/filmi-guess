@@ -1,3 +1,4 @@
+import { randomUUID } from 'node:crypto';
 import type { Room, Player, RoomSettings } from './types.js';
 import { getQuestionsByCategories } from './questions.js';
 
@@ -12,7 +13,7 @@ function generateCode(): string {
   return code;
 }
 
-export function createRoom(hostId: string, hostName: string): Room {
+export function createRoom(hostId: string, hostName: string): { room: Room; token: string } {
   const code = generateCode();
   const settings: RoomSettings = {
     totalRounds: 10,
@@ -27,6 +28,8 @@ export function createRoom(hostId: string, hostName: string): Room {
     isHost: true,
   };
 
+  const token = randomUUID();
+
   const room: Room = {
     code,
     players: new Map([[hostId, host]]),
@@ -38,13 +41,14 @@ export function createRoom(hostId: string, hostName: string): Room {
     timeRemaining: 0,
     roundWinners: [],
     settings,
+    playerTokens: new Map([[hostName.toLowerCase(), token]]),
   };
 
   rooms.set(code, room);
-  return room;
+  return { room, token };
 }
 
-export function joinRoom(code: string, playerId: string, playerName: string): Room | null {
+export function joinRoom(code: string, playerId: string, playerName: string): { room: Room; token: string } | null {
   const room = rooms.get(code.toUpperCase());
   if (!room || room.state !== 'waiting') return null;
   if (room.players.size >= 50) return null;
@@ -57,7 +61,10 @@ export function joinRoom(code: string, playerId: string, playerName: string): Ro
     isHost: false,
   };
   room.players.set(playerId, player);
-  return room;
+
+  const token = randomUUID();
+  room.playerTokens.set(playerName.toLowerCase(), token);
+  return { room, token };
 }
 
 export function getRoom(code: string): Room | undefined {
@@ -91,26 +98,33 @@ export function markPlayerDisconnected(room: Room, playerId: string): void {
   if (player) player.disconnected = true;
 }
 
-export function rejoinRoom(code: string, playerName: string, newSocketId: string): { room: Room; player: Player } | null {
+export function rejoinRoom(code: string, playerName: string, token: string, newSocketId: string): { room: Room; player: Player; token: string } | null {
   const room = rooms.get(code.toUpperCase());
   if (!room) return null;
 
-  // Existing player (disconnected or active) — swap socket ID, preserve score
+  const key = playerName.toLowerCase();
+  const expectedToken = room.playerTokens.get(key);
+
+  // Existing player (disconnected or active) — only reattach if the session token matches,
+  // otherwise anyone who learns a player's public display name could hijack their identity/score
   for (const [oldId, player] of room.players) {
-    if (player.name.toLowerCase() === playerName.toLowerCase()) {
+    if (player.name.toLowerCase() === key) {
+      if (!expectedToken || expectedToken !== token) return null;
       room.players.delete(oldId);
       player.id = newSocketId;
       player.disconnected = false;
       room.players.set(newSocketId, player);
-      return { room, player };
+      return { room, player, token: expectedToken };
     }
   }
 
   // Completely new player — only allowed while game is still in lobby
   if (room.state !== 'waiting' || room.players.size >= 50) return null;
+  const newToken = randomUUID();
   const player: Player = { id: newSocketId, name: playerName, score: 0, streak: 0, isHost: false };
   room.players.set(newSocketId, player);
-  return { room, player };
+  room.playerTokens.set(key, newToken);
+  return { room, player, token: newToken };
 }
 
 export function startGame(room: Room): void {

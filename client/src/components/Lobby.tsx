@@ -2,7 +2,7 @@
 import { useState, useEffect } from 'react';
 import { getSocket } from '@/lib/socket';
 import { useGameStore } from '@/store/gameStore';
-import { getSavedName } from '@/lib/playerName';
+import { getSavedName, getSavedToken, saveToken } from '@/lib/playerName';
 import type { RoomPublic, Player, QuestionPublic } from '@/types';
 
 interface Props {
@@ -38,8 +38,9 @@ export default function Lobby({ room, myPlayer }: Props) {
 
   function joinGame() {
     if (!savedName) return;
-    getSocket().emit('room:rejoin', { code: room.code, playerName: savedName }, (err: string | null, data?: { room: RoomPublic; player: Player; question: QuestionPublic | null; roundNumber: number; timeLimit: number }) => {
+    getSocket().emit('room:rejoin', { code: room.code, playerName: savedName, token: getSavedToken() }, (err: string | null, data?: { room: RoomPublic; player: Player; token: string; question: QuestionPublic | null; roundNumber: number; timeLimit: number }) => {
       if (err || !data) return;
+      saveToken(data.token);
       store.setRoom(data.room);
       store.setMyPlayer(data.player);
       store.setSpectating(false);

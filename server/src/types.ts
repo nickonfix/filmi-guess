@@ -41,6 +41,8 @@ export interface Room {
   timeRemaining: number;
   roundWinners: RoundWinner[];
   settings: RoomSettings;
+  /** Lowercase player name -> session token, required to reattach to that player via room:rejoin */
+  playerTokens: Map<string, string>;
 }
 
 export interface RoomSettings {
@@ -62,9 +64,9 @@ export interface ServerToClientEvents {
 }
 
 export interface ClientToServerEvents {
-  'room:create': (playerName: string, callback: (data: { code: string; room: RoomPublic; player: Player }) => void) => void;
-  'room:join': (data: { code: string; playerName: string }, callback: (err: string | null, data?: { room: RoomPublic; player: Player }) => void) => void;
-  'room:rejoin': (data: { code: string; playerName: string }, callback: (err: string | null, data?: { room: RoomPublic; player: Player; question: QuestionPublic | null; roundNumber: number; timeLimit: number }) => void) => void;
+  'room:create': (playerName: string, callback: (data: { code: string; room: RoomPublic; player: Player; token: string }) => void) => void;
+  'room:join': (data: { code: string; playerName: string }, callback: (err: string | null, data?: { room: RoomPublic; player: Player; token: string }) => void) => void;
+  'room:rejoin': (data: { code: string; playerName: string; token: string }, callback: (err: string | null, data?: { room: RoomPublic; player: Player; token: string; question: QuestionPublic | null; roundNumber: number; timeLimit: number }) => void) => void;
   'room:watch': (data: { code: string }, callback: (err: string | null, data?: { room: RoomPublic; question: QuestionPublic | null; roundNumber: number; timeLimit: number }) => void) => void;
   'game:start': () => void;
   'game:answer': (answer: string) => void;

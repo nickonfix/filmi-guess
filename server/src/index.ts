@@ -33,27 +33,28 @@ io.on('connection', socket => {
 
   socket.on('room:create', (playerName, callback) => {
     const name = playerName?.trim().slice(0, 20) || 'Player';
-    const room = createRoom(socket.id, name);
+    const { room, token } = createRoom(socket.id, name);
     socket.join(room.code);
     const roomPublic = getRoomPublic(room);
     const player = room.players.get(socket.id)!;
     // Send data in the callback so the client has it before navigating
-    callback({ code: room.code, room: roomPublic, player });
+    callback({ code: room.code, room: roomPublic, player, token });
     console.log(`[room:create] ${name} created room ${room.code}`);
   });
 
   socket.on('room:join', ({ code, playerName }, callback) => {
     const name = playerName?.trim().slice(0, 20) || 'Player';
-    const room = joinRoom(code, socket.id, name);
-    if (!room) {
+    const result = joinRoom(code, socket.id, name);
+    if (!result) {
       callback('Room not found or game already started');
       return;
     }
+    const { room, token } = result;
     socket.join(room.code);
     const roomPublic = getRoomPublic(room);
     const player = room.players.get(socket.id)!;
     // Send data in the callback so the client has it before navigating
-    callback(null, { room: roomPublic, player });
+    callback(null, { room: roomPublic, player, token });
     // Notify others in the room
     socket.to(room.code).emit('room:updated', roomPublic);
     console.log(`[room:join] ${name} joined room ${room.code}`);
@@ -72,15 +73,16 @@ io.on('connection', socket => {
     console.log(`[room:watch] ${socket.id} watching room ${room.code}`);
   });
 
-  socket.on('room:rejoin', ({ code, playerName }, callback) => {
-    const result = rejoinRoom(code, playerName, socket.id);
+  socket.on('room:rejoin', ({ code, playerName, token }, callback) => {
+    const result = rejoinRoom(code, playerName, token, socket.id);
     if (!result) { callback('Room not found or game already started'); return; }
-    const { room, player } = result;
+    const { room, player, token: sessionToken } = result;
     socket.join(room.code);
     const roomPublic = getRoomPublic(room);
     callback(null, {
       room: roomPublic,
       player,
+      token: sessionToken,
       question: getQuestionPublic(room),
       roundNumber: room.currentQuestionIndex + 1,
       timeLimit: 25,

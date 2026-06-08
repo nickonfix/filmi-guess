@@ -3,7 +3,7 @@ import { useState, useEffect } from 'react';
 import { useRouter } from 'next/navigation';
 import { connectSocket } from '@/lib/socket';
 import { useGameStore } from '@/store/gameStore';
-import { getSavedName, saveName } from '@/lib/playerName';
+import { getSavedName, saveName, saveToken } from '@/lib/playerName';
 import type { RoomPublic, Player } from '@/types';
 
 export default function LandingPage() {
@@ -28,7 +28,8 @@ export default function LandingPage() {
     saveName(name);
     store.reset();
     const socket = connectSocket();
-    socket.emit('room:create', name, (data: { code: string; room: RoomPublic; player: Player }) => {
+    socket.emit('room:create', name, (data: { code: string; room: RoomPublic; player: Player; token: string }) => {
+      saveToken(data.token);
       store.setRoom(data.room);
       store.setMyPlayer(data.player);
       router.push(`/room/${data.code}`);
@@ -44,8 +45,9 @@ export default function LandingPage() {
     saveName(name);
     store.reset();
     const socket = connectSocket();
-    socket.emit('room:join', { code: roomCode.toUpperCase().trim(), playerName: name }, (err: string | null, data?: { room: RoomPublic; player: Player }) => {
+    socket.emit('room:join', { code: roomCode.toUpperCase().trim(), playerName: name }, (err: string | null, data?: { room: RoomPublic; player: Player; token: string }) => {
       if (err || !data) { setError(err || 'Failed to join'); setLoading(false); return; }
+      saveToken(data.token);
       store.setRoom(data.room);
       store.setMyPlayer(data.player);
       router.push(`/room/${roomCode.toUpperCase().trim()}`);
