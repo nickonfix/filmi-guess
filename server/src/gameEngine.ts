@@ -138,6 +138,7 @@ function endRound(io: Server, room: Room): void {
 
 function endGame(io: Server, room: Room): void {
   room.state = 'finished';
+  
   if (room.timer) { clearInterval(room.timer); room.timer = null; }
   io.to(room.code).emit('game:finished', getScores(room));
   io.to(room.code).emit('room:updated', getRoomPublic(room));

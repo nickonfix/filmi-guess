@@ -4,7 +4,7 @@ import './globals.css';
 
 const inter = Inter({ subsets: ['latin'], variable: '--font-display' });
 
-const BASE = process.env.NEXT_PUBLIC_SITE_URL ?? 'https://filmi-guess.up.railway.app';
+const BASE = process.env.NEXT_PUBLIC_SITE_URL ?? 'https://filmi-guess.pages.dev';
 
 export const metadata: Metadata = {
   metadataBase: new URL(BASE),
