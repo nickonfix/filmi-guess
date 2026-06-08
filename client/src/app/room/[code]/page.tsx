@@ -1,3 +1,5 @@
+export const runtime = 'edge';
+
 import GameRoom from '@/components/GameRoom';
 
 export default function RoomPage({ params }: { params: { code: string } }) {
