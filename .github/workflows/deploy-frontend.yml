@@ -30,10 +30,9 @@ jobs:
           NEXT_PUBLIC_SERVER_URL: ${{ vars.NEXT_PUBLIC_SERVER_URL }}
           NEXT_PUBLIC_SITE_URL: ${{ vars.NEXT_PUBLIC_SITE_URL }}
 
-      - name: Deploy to Cloudflare Pages
-        uses: cloudflare/wrangler-action@v3
+      - name: Upload build output
+        uses: actions/upload-artifact@v4
         with:
-          apiToken: ${{ secrets.CLOUDFLARE_API_TOKEN }}
-          accountId: e28b94fe61d285bc07f881a2edf4e52a
-          command: pages deploy .vercel/output/static --project-name=filmi-guess --commit-dirty=true
-          workingDirectory: client
+          name: pages-build
+          path: client/.vercel/output/static
+          if-no-files-found: error
