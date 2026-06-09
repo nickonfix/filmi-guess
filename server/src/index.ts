@@ -178,16 +178,19 @@ io.on('connection', socket => {
     const player = room.players.get(socket.id);
     const playerName = player?.name ?? socket.id;
 
-    if (room.state === 'waiting') {
-      // Lobby — remove immediately
+    if (room.state === 'waiting' && room.players.size > 1) {
+      // Lobby with others still present — remove immediately so the player list updates.
       removePlayer(room, socket.id);
-      if (room.players.size > 0) io.to(room.code).emit('room:updated', getRoomPublic(room));
+      io.to(room.code).emit('room:updated', getRoomPublic(room));
     } else {
-      // Game in progress — mark disconnected so others can see, keep score intact
+      // Either a game in progress, or the last person in a lobby. Don't tear the room
+      // down on a transient disconnect (tab blur, phone sleep, network blip) — that's
+      // what made freshly-created public rooms vanish before anyone could join them.
+      // Mark disconnected, keep the room (and its public listing) alive, and clean up
+      // later only if they never reconnect.
       markPlayerDisconnected(room, socket.id);
       io.to(room.code).emit('room:updated', getRoomPublic(room));
 
-      // Clean up after 2 minutes if they never rejoin
       const oldId = socket.id;
       setTimeout(() => {
         const still = room.players.get(oldId);
