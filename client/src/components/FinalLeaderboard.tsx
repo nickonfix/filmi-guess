@@ -25,7 +25,7 @@ export default function FinalLeaderboard({ scores, myId }: Props) {
         <div className="space-y-6">
           {/* Winner — polarity-flipped dark card */}
           {winner && (
-            <div className="relative overflow-hidden rounded-lg bg-primary p-8 text-center shadow-card-dark">
+            <div className="relative overflow-hidden rounded-lg bg-band p-8 text-center shadow-card-dark">
               <div className="mesh-dark pointer-events-none absolute inset-0 opacity-50" />
               <div className="relative">
                 <div className="text-6xl">🏆</div>

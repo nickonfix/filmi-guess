@@ -1,49 +1,48 @@
 /** @type {import('tailwindcss').Config} */
 module.exports = {
+  darkMode: 'class',
   content: ['./src/**/*.{js,ts,jsx,tsx}'],
   theme: {
     extend: {
       colors: {
-        // Ink / text
-        ink: '#171717',
-        body: '#4d4d4d',
-        mute: '#888888',
-        'on-primary': '#ffffff',
-        primary: '#171717',
+        // Theme-aware (flip on .dark) — driven by CSS variables
+        ink: 'rgb(var(--ink) / <alpha-value>)',
+        body: 'rgb(var(--body) / <alpha-value>)',
+        mute: 'rgb(var(--mute) / <alpha-value>)',
+        'on-primary': 'rgb(var(--on-primary) / <alpha-value>)',
+        primary: 'rgb(var(--primary) / <alpha-value>)',
+        band: 'rgb(var(--band) / <alpha-value>)',
+        'on-band': '#ffffff',
+        canvas: 'rgb(var(--canvas) / <alpha-value>)',
+        'canvas-soft': 'rgb(var(--canvas-soft) / <alpha-value>)',
+        'canvas-soft-2': 'rgb(var(--canvas-soft-2) / <alpha-value>)',
+        hairline: 'rgb(var(--hairline) / <alpha-value>)',
+        'hairline-strong': 'rgb(var(--hairline-strong) / <alpha-value>)',
 
-        // Surfaces
-        canvas: '#ffffff',
-        'canvas-soft': '#fafafa',
-        'canvas-soft-2': '#f5f5f5',
-        hairline: '#ebebeb',
-        'hairline-strong': '#a1a1a1',
-
-        // Brand gradient stops
+        // Fixed brand gradient stops
         cyan: '#50e3c2',
         violet: '#7928ca',
         'highlight-pink': '#ff0080',
-
-        // Semantic
-        link: '#0070f3',
-        'link-deep': '#0761d1',
-        'link-soft': '#d3e5ff',
-        success: '#0cce6b',
-        'success-soft': '#d6f5e3',
-        'success-deep': '#0a8f4d',
-        error: '#ee0000',
-        'error-soft': '#f7d4d6',
-        'error-deep': '#c50000',
-        warning: '#f5a623',
-        'warning-soft': '#ffefcf',
-        'warning-deep': '#ab570a',
-
-        // Gradient pairs (for utilities / mockups)
         'g-develop-start': '#007cf0',
         'g-develop-end': '#00dfd8',
         'g-preview-start': '#7928ca',
         'g-preview-end': '#ff0080',
         'g-ship-start': '#ff4d4d',
         'g-ship-end': '#f9cb28',
+
+        // Semantic (flip on .dark)
+        link: 'rgb(var(--link) / <alpha-value>)',
+        'link-deep': 'rgb(var(--link-deep) / <alpha-value>)',
+        'link-soft': '#d3e5ff',
+        success: '#0cce6b',
+        'success-soft': 'rgb(var(--success-soft) / <alpha-value>)',
+        'success-deep': 'rgb(var(--success-deep) / <alpha-value>)',
+        error: '#ee0000',
+        'error-soft': 'rgb(var(--error-soft) / <alpha-value>)',
+        'error-deep': 'rgb(var(--error-deep) / <alpha-value>)',
+        warning: '#f5a623',
+        'warning-soft': 'rgb(var(--warning-soft) / <alpha-value>)',
+        'warning-deep': 'rgb(var(--warning-deep) / <alpha-value>)',
       },
       fontFamily: {
         sans: ['var(--font-sans)', 'Inter', 'system-ui', 'sans-serif'],
@@ -60,21 +59,18 @@ module.exports = {
         pill: '100px',
       },
       boxShadow: {
-        // Geist stacked-shadow ladder — light surfaces
-        hairline: 'inset 0 0 0 1px rgba(0,0,0,0.07)',
-        card: '0px 1px 1px rgba(0,0,0,0.02), 0px 2px 2px rgba(0,0,0,0.04), inset 0 0 0 1px rgba(0,0,0,0.06)',
-        'card-md':
-          '0px 2px 2px rgba(0,0,0,0.04), 0px 8px 8px -8px rgba(0,0,0,0.06), inset 0 0 0 1px rgba(0,0,0,0.06)',
-        'card-lg':
-          '0px 2px 2px rgba(0,0,0,0.04), 0px 8px 16px -4px rgba(0,0,0,0.08), inset 0 0 0 1px rgba(0,0,0,0.06)',
-        modal:
-          '0px 1px 1px rgba(0,0,0,0.02), 0px 8px 16px -4px rgba(0,0,0,0.06), 0px 24px 32px -8px rgba(0,0,0,0.08), inset 0 0 0 1px rgba(0,0,0,0.06)',
-        // Dark-band variants (white inset ring)
+        // Geist stacked-shadow ladder — flip on .dark via CSS variables
+        hairline: 'var(--sh-hairline)',
+        card: 'var(--sh-card)',
+        'card-md': 'var(--sh-card-md)',
+        'card-lg': 'var(--sh-card-lg)',
+        modal: 'var(--sh-modal)',
+        btn: 'var(--sh-btn)',
+        'btn-primary': 'var(--sh-btn-primary)',
+        // Always-dark spotlight surfaces (bands, winner card, overlays)
         'card-dark':
           '0px 2px 2px rgba(0,0,0,0.3), 0px 8px 16px -4px rgba(0,0,0,0.4), inset 0 0 0 1px rgba(255,255,255,0.08)',
-        btn: '0px 1px 2px rgba(0,0,0,0.1), inset 0 0 0 1px rgba(0,0,0,0.06)',
-        'btn-primary': '0px 1px 2px rgba(0,0,0,0.25)',
-        focus: '0 0 0 3px rgba(0,112,243,0.2)',
+        focus: '0 0 0 3px rgba(0,112,243,0.3)',
       },
       animation: {
         'pulse-fast': 'pulse 0.8s cubic-bezier(0.4, 0, 0.6, 1) infinite',

@@ -4,6 +4,7 @@ import { getSocket } from '@/lib/socket';
 import { useGameStore } from '@/store/gameStore';
 import { getSavedName, getSavedToken, saveToken } from '@/lib/playerName';
 import { CATEGORY_META } from '@/types';
+import ThemeToggle from './ThemeToggle';
 import type { RoomPublic, Player, QuestionPublic, Category, RoomSettings } from '@/types';
 
 interface Props {
@@ -78,7 +79,15 @@ export default function Lobby({ room, myPlayer }: Props) {
         <div className="absolute inset-x-0 bottom-0 h-40 bg-gradient-to-b from-transparent to-canvas-soft" />
       </div>
 
-      <div className="mx-auto flex min-h-screen w-full max-w-md flex-col justify-center px-4 py-12">
+      {/* Slim header */}
+      <header className="mx-auto flex h-16 w-full max-w-page items-center justify-between px-4 sm:px-6">
+        <a href="/" className="text-lg font-semibold tracking-[-0.02em] text-ink">
+          Filmi<span className="text-gradient">Guess</span>
+        </a>
+        <ThemeToggle />
+      </header>
+
+      <div className="mx-auto flex w-full max-w-md flex-col justify-center px-4 pb-12 pt-2">
         <div className="space-y-5">
           {/* Room code */}
           <div className="card-lg p-7 text-center">
@@ -219,11 +228,11 @@ export default function Lobby({ room, myPlayer }: Props) {
                 </div>
                 <button
                   onClick={() => updateSettings({ isPublic: !settings.isPublic })}
-                  className={`relative h-6 w-11 rounded-full transition-colors ${settings.isPublic ? 'bg-ink' : 'bg-hairline'}`}
+                  className={`relative h-6 w-11 rounded-full transition-colors ${settings.isPublic ? 'bg-success' : 'bg-hairline'}`}
                   role="switch"
                   aria-checked={settings.isPublic}
                 >
-                  <span className={`absolute top-0.5 left-0.5 h-5 w-5 rounded-full bg-canvas shadow-btn transition-transform ${settings.isPublic ? 'translate-x-5' : ''}`} />
+                  <span className={`absolute top-0.5 left-0.5 h-5 w-5 rounded-full bg-white shadow-btn transition-transform ${settings.isPublic ? 'translate-x-5' : ''}`} />
                 </button>
               </div>
             )}
