@@ -1,0 +1,19 @@
+# Render Blueprint for the FilmiGuess backend.
+# Render free web services run a single always-on-per-request instance, which
+# suits the in-memory room store (no multi-instance split-brain). Note: the
+# free plan sleeps after ~15 min idle — upgrade to "starter" to stay always-on.
+services:
+  - type: web
+    name: filmi-guess-server
+    runtime: node
+    plan: free
+    region: singapore          # closest free region to India
+    rootDir: server            # monorepo: backend lives in /server
+    branch: master
+    buildCommand: npm install && npm run build
+    startCommand: npm start
+    healthCheckPath: /health
+    autoDeploy: true
+    envVars:
+      - key: NODE_VERSION
+        value: "20"

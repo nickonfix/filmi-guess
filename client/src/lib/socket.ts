@@ -3,9 +3,9 @@ import { io, Socket } from 'socket.io-client';
 
 let socket: Socket | null = null;
 
-// Public backend used by the deployed site (Fly.io).
-// Must match the `app` name in server/fly.toml -> https://<app>.fly.dev
-const PROD_SERVER_URL = 'https://filmi-guess-server.fly.dev';
+// Public backend used by the deployed site (Render).
+// Must match the service `name` in render.yaml -> https://<name>.onrender.com
+const PROD_SERVER_URL = 'https://filmi-guess-server.onrender.com';
 
 function getServerUrl(): string {
   if (process.env.NEXT_PUBLIC_SERVER_URL) return process.env.NEXT_PUBLIC_SERVER_URL;
