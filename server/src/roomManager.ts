@@ -1,5 +1,5 @@
 import { randomUUID } from 'node:crypto';
-import type { Room, Player, RoomSettings } from './types.js';
+import type { Room, Player, RoomSettings, Category, PublicRoomSummary } from './types.js';
 import { getQuestionsByCategories } from './questions.js';
 
 const rooms = new Map<string, Room>();
@@ -18,6 +18,8 @@ export function createRoom(hostId: string, hostName: string): { room: Room; toke
   const settings: RoomSettings = {
     totalRounds: 10,
     categories: ['bollywood_actor', 'hindi_movie', 'south_actor', 'classic_movie'],
+    roundTime: 25,
+    isPublic: false,
   };
 
   const host: Player = {
@@ -138,6 +140,59 @@ export function startGame(room: Room): void {
     player.score = 0;
     player.streak = 0;
   }
+}
+
+const VALID_CATEGORIES: Category[] = ['bollywood_actor', 'hindi_movie', 'south_actor', 'classic_movie'];
+
+function clamp(n: number, min: number, max: number): number {
+  return Math.max(min, Math.min(max, Math.round(n)));
+}
+
+/** Apply host-supplied settings with validation. Returns the updated settings. */
+export function updateSettings(room: Room, partial: Partial<RoomSettings>): RoomSettings {
+  const s = room.settings;
+  if (typeof partial.totalRounds === 'number' && Number.isFinite(partial.totalRounds)) {
+    s.totalRounds = clamp(partial.totalRounds, 3, 30);
+  }
+  if (typeof partial.roundTime === 'number' && Number.isFinite(partial.roundTime)) {
+    s.roundTime = clamp(partial.roundTime, 10, 60);
+  }
+  if (typeof partial.isPublic === 'boolean') {
+    s.isPublic = partial.isPublic;
+  }
+  if (Array.isArray(partial.categories)) {
+    const valid = partial.categories.filter((c): c is Category => VALID_CATEGORIES.includes(c as Category));
+    // Always keep at least one category selected
+    if (valid.length > 0) s.categories = [...new Set(valid)];
+  }
+  return s;
+}
+
+/** Remove a player by id (used for host kicks). Returns the kicked player, if any. */
+export function kickPlayer(room: Room, targetId: string): Player | undefined {
+  const target = room.players.get(targetId);
+  if (!target || target.isHost) return undefined; // never kick the host
+  room.players.delete(targetId);
+  room.playerTokens.delete(target.name.toLowerCase());
+  return target;
+}
+
+/** Public rooms that are still in the lobby and joinable. */
+export function listPublicRooms(): PublicRoomSummary[] {
+  const out: PublicRoomSummary[] = [];
+  for (const room of rooms.values()) {
+    if (!room.settings.isPublic || room.state !== 'waiting' || room.players.size >= 50) continue;
+    const host = [...room.players.values()].find(p => p.isHost);
+    out.push({
+      code: room.code,
+      hostName: host?.name ?? 'Host',
+      playerCount: room.players.size,
+      totalRounds: room.settings.totalRounds,
+      roundTime: room.settings.roundTime,
+      categories: room.settings.categories,
+    });
+  }
+  return out.sort((a, b) => b.playerCount - a.playerCount);
 }
 
 export function getRoomPublic(room: Room) {

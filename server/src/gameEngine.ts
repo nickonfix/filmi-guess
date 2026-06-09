@@ -3,7 +3,7 @@ import type { Room, RoundWinner, QuestionPublic } from './types.js';
 import { isCorrectAnswer } from './answerMatcher.js';
 import { getRoomPublic } from './roomManager.js';
 
-const ROUND_TIME = 25; // seconds per round
+const DEFAULT_ROUND_TIME = 25; // fallback seconds per round
 const BETWEEN_ROUND_TIME = 5; // seconds to show answer
 
 export function getQuestionPublic(room: Room): QuestionPublic | null {
@@ -28,9 +28,9 @@ function getScores(room: Room) {
   })).sort((a, b) => b.score - a.score);
 }
 
-function calcPoints(position: number, timeRemaining: number, streak: number): number {
+function calcPoints(position: number, timeRemaining: number, streak: number, roundTime: number): number {
   const basePoints = position === 1 ? 1000 : position === 2 ? 700 : position === 3 ? 500 : 200;
-  const speedBonus = position <= 3 ? Math.floor((timeRemaining / ROUND_TIME) * 200) : 0;
+  const speedBonus = position <= 3 ? Math.floor((timeRemaining / roundTime) * 200) : 0;
   const multiplier = streak >= 3 ? 1.5 : 1;
   return Math.floor((basePoints + speedBonus) * multiplier);
 }
@@ -41,10 +41,11 @@ export function startRound(io: Server, room: Room): void {
     return;
   }
 
+  const roundTime = room.settings.roundTime || DEFAULT_ROUND_TIME;
   room.currentQuestion = room.questions[room.currentQuestionIndex];
   room.roundWinners = [];
   room.state = 'playing';
-  room.timeRemaining = ROUND_TIME;
+  room.timeRemaining = roundTime;
 
   const questionPublic = getQuestionPublic(room);
 
@@ -52,7 +53,7 @@ export function startRound(io: Server, room: Room): void {
     question: questionPublic,
     roundNumber: room.currentQuestionIndex + 1,
     totalRounds: room.questions.length,
-    timeLimit: ROUND_TIME,
+    timeLimit: roundTime,
   });
 
   if (room.timer) clearInterval(room.timer);
@@ -83,7 +84,7 @@ export function handleAnswer(io: Server, room: Room, playerId: string, answer: s
 
   player.streak++;
   const position = room.roundWinners.length + 1;
-  const points = calcPoints(position, room.timeRemaining, player.streak);
+  const points = calcPoints(position, room.timeRemaining, player.streak, room.settings.roundTime || DEFAULT_ROUND_TIME);
   player.score += points;
 
   const winner: RoundWinner = {

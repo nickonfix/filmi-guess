@@ -77,6 +77,13 @@ export function useGameSocket() {
       useGameStore.getState().addChat(msg);
     });
 
+    socket.on('room:kicked', () => {
+      useGameStore.getState().reset();
+      if (typeof window !== 'undefined') {
+        window.location.href = '/?kicked=1';
+      }
+    });
+
     return () => {
       socket.off('connect');
       socket.off('room:updated');
@@ -86,6 +93,7 @@ export function useGameSocket() {
       socket.off('game:round_end');
       socket.off('game:finished');
       socket.off('chat:message');
+      socket.off('room:kicked');
     };
   }, []);
 

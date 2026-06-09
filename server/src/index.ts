@@ -12,6 +12,9 @@ import {
   removePlayer,
   startGame,
   getRoomPublic,
+  updateSettings,
+  kickPlayer,
+  listPublicRooms,
 } from './roomManager.js';
 import { startRound, handleAnswer, getQuestionPublic } from './gameEngine.js';
 import type { ServerToClientEvents, ClientToServerEvents } from './types.js';
@@ -68,7 +71,7 @@ io.on('connection', socket => {
       room: getRoomPublic(room),
       question: getQuestionPublic(room),
       roundNumber: room.currentQuestionIndex + 1,
-      timeLimit: 25,
+      timeLimit: room.settings.roundTime,
     });
     console.log(`[room:watch] ${socket.id} watching room ${room.code}`);
   });
@@ -85,10 +88,42 @@ io.on('connection', socket => {
       token: sessionToken,
       question: getQuestionPublic(room),
       roundNumber: room.currentQuestionIndex + 1,
-      timeLimit: 25,
+      timeLimit: room.settings.roundTime,
     });
     socket.to(room.code).emit('room:updated', roomPublic);
     console.log(`[room:rejoin] ${playerName} rejoined room ${room.code} (score: ${player.score})`);
+  });
+
+  socket.on('rooms:list', callback => {
+    if (typeof callback === 'function') callback(listPublicRooms());
+  });
+
+  socket.on('room:update_settings', (settings, callback) => {
+    const room = getRoomByPlayerId(socket.id);
+    if (!room) { callback?.('Room not found'); return; }
+    const player = room.players.get(socket.id);
+    if (!player?.isHost) { callback?.('Only the host can change settings'); return; }
+    if (room.state !== 'waiting') { callback?.('Settings can only be changed in the lobby'); return; }
+    updateSettings(room, settings ?? {});
+    io.to(room.code).emit('room:updated', getRoomPublic(room));
+    callback?.(null);
+    console.log(`[room:update_settings] ${room.code}`, room.settings);
+  });
+
+  socket.on('room:kick', targetId => {
+    const room = getRoomByPlayerId(socket.id);
+    if (!room || typeof targetId !== 'string') return;
+    const host = room.players.get(socket.id);
+    if (!host?.isHost) return;
+    if (targetId === socket.id) return; // can't kick yourself
+    const kicked = kickPlayer(room, targetId);
+    if (!kicked) return;
+    // Tell the kicked client, then remove them from the room channel
+    io.to(targetId).emit('room:kicked');
+    const kickedSocket = io.sockets.sockets.get(targetId);
+    if (kickedSocket) kickedSocket.leave(room.code);
+    io.to(room.code).emit('room:updated', getRoomPublic(room));
+    console.log(`[room:kick] ${kicked.name} kicked from room ${room.code}`);
   });
 
   socket.on('game:start', () => {

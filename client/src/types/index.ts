@@ -17,11 +17,31 @@ export interface RoomPublic {
   state: RoomState;
   currentQuestionIndex: number;
   totalQuestions: number;
-  settings: {
-    totalRounds: number;
-    categories: Category[];
-  };
+  settings: RoomSettings;
 }
+
+export interface RoomSettings {
+  totalRounds: number;
+  categories: Category[];
+  roundTime: number;
+  isPublic: boolean;
+}
+
+export interface PublicRoomSummary {
+  code: string;
+  hostName: string;
+  playerCount: number;
+  totalRounds: number;
+  roundTime: number;
+  categories: Category[];
+}
+
+export const CATEGORY_META: { id: Category; icon: string; label: string }[] = [
+  { id: 'bollywood_actor', icon: '🎬', label: 'Bollywood Actors' },
+  { id: 'hindi_movie', icon: '🎥', label: 'Hindi Movies' },
+  { id: 'south_actor', icon: '🌟', label: 'South Stars' },
+  { id: 'classic_movie', icon: '🏆', label: 'Classic Films' },
+];
 
 export interface QuestionPublic {
   id: string;

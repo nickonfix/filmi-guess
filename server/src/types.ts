@@ -48,6 +48,17 @@ export interface Room {
 export interface RoomSettings {
   totalRounds: number;
   categories: Category[];
+  roundTime: number;
+  isPublic: boolean;
+}
+
+export interface PublicRoomSummary {
+  code: string;
+  hostName: string;
+  playerCount: number;
+  totalRounds: number;
+  roundTime: number;
+  categories: Category[];
 }
 
 // Socket event payloads
@@ -55,6 +66,7 @@ export interface ServerToClientEvents {
   'room:joined': (data: { room: RoomPublic; player: Player }) => void;
   'room:updated': (room: RoomPublic) => void;
   'room:error': (message: string) => void;
+  'room:kicked': () => void;
   'game:round_start': (data: { question: QuestionPublic; roundNumber: number; totalRounds: number; timeLimit: number }) => void;
   'game:timer': (timeRemaining: number) => void;
   'game:correct_answer': (winner: RoundWinner) => void;
@@ -71,6 +83,9 @@ export interface ClientToServerEvents {
   'game:start': () => void;
   'game:answer': (answer: string) => void;
   'chat:send': (message: string) => void;
+  'room:update_settings': (settings: Partial<RoomSettings>, callback?: (err: string | null) => void) => void;
+  'room:kick': (playerId: string) => void;
+  'rooms:list': (callback: (rooms: PublicRoomSummary[]) => void) => void;
 }
 
 export interface QuestionPublic {
