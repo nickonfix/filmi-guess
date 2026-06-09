@@ -52,7 +52,8 @@ export function createRoom(hostId: string, hostName: string): { room: Room; toke
 
 export function joinRoom(code: string, playerId: string, playerName: string): { room: Room; token: string } | null {
   const room = rooms.get(code.toUpperCase());
-  if (!room || room.state !== 'waiting') return null;
+  // Joinable at any point while the game is live — only a finished game is closed.
+  if (!room || room.state === 'finished') return null;
   if (room.players.size >= 50) return null;
 
   const player: Player = {
@@ -120,8 +121,8 @@ export function rejoinRoom(code: string, playerName: string, token: string, newS
     }
   }
 
-  // Completely new player — only allowed while game is still in lobby
-  if (room.state !== 'waiting' || room.players.size >= 50) return null;
+  // Completely new player — allowed any time before the game finishes (join-in-progress)
+  if (room.state === 'finished' || room.players.size >= 50) return null;
   const newToken = randomUUID();
   const player: Player = { id: newSocketId, name: playerName, score: 0, streak: 0, isHost: false };
   room.players.set(newSocketId, player);
@@ -177,11 +178,11 @@ export function kickPlayer(room: Room, targetId: string): Player | undefined {
   return target;
 }
 
-/** Public rooms that are still in the lobby and joinable. */
+/** Public rooms that are joinable — i.e. live (lobby or in-progress), not finished or full. */
 export function listPublicRooms(): PublicRoomSummary[] {
   const out: PublicRoomSummary[] = [];
   for (const room of rooms.values()) {
-    if (!room.settings.isPublic || room.state !== 'waiting' || room.players.size >= 50) continue;
+    if (!room.settings.isPublic || room.state === 'finished' || room.players.size >= 50) continue;
     const host = [...room.players.values()].find(p => p.isHost);
     out.push({
       code: room.code,
@@ -190,9 +191,16 @@ export function listPublicRooms(): PublicRoomSummary[] {
       totalRounds: room.settings.totalRounds,
       roundTime: room.settings.roundTime,
       categories: room.settings.categories,
+      state: room.state,
+      roundNumber: room.state === 'waiting' ? 0 : room.currentQuestionIndex + 1,
     });
   }
-  return out.sort((a, b) => b.playerCount - a.playerCount);
+  // Lobbies first (easiest to join from the start), then by how full the room is.
+  return out.sort((a, b) => {
+    if (a.state === 'waiting' && b.state !== 'waiting') return -1;
+    if (b.state === 'waiting' && a.state !== 'waiting') return 1;
+    return b.playerCount - a.playerCount;
+  });
 }
 
 export function getRoomPublic(room: Room) {

@@ -34,6 +34,10 @@ export interface PublicRoomSummary {
   totalRounds: number;
   roundTime: number;
   categories: Category[];
+  /** Current room state so the browser can show "In lobby" vs "In progress". */
+  state: RoomState;
+  /** 1-based round number when a game is in progress (0 in the lobby). */
+  roundNumber: number;
 }
 
 export const CATEGORY_META: { id: Category; icon: string; label: string }[] = [

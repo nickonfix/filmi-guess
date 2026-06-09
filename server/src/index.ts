@@ -49,18 +49,27 @@ io.on('connection', socket => {
     const name = playerName?.trim().slice(0, 20) || 'Player';
     const result = joinRoom(code, socket.id, name);
     if (!result) {
-      callback('Room not found or game already started');
+      callback('Room not found or the game has already finished');
       return;
     }
     const { room, token } = result;
     socket.join(room.code);
     const roomPublic = getRoomPublic(room);
     const player = room.players.get(socket.id)!;
-    // Send data in the callback so the client has it before navigating
-    callback(null, { room: roomPublic, player, token });
+    // Send data in the callback so the client has it before navigating.
+    // Include the live question so a mid-game joiner lands straight on the board.
+    callback(null, {
+      room: roomPublic,
+      player,
+      token,
+      question: getQuestionPublic(room),
+      roundNumber: room.currentQuestionIndex + 1,
+      timeLimit: room.settings.roundTime,
+      timeRemaining: room.timeRemaining,
+    });
     // Notify others in the room
     socket.to(room.code).emit('room:updated', roomPublic);
-    console.log(`[room:join] ${name} joined room ${room.code}`);
+    console.log(`[room:join] ${name} joined room ${room.code} (state: ${room.state})`);
   });
 
   socket.on('room:watch', ({ code }, callback) => {

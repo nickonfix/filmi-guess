@@ -5,7 +5,7 @@ import { connectSocket } from '@/lib/socket';
 import { useGameStore } from '@/store/gameStore';
 import { getSavedName, saveName, saveToken } from '@/lib/playerName';
 import { CATEGORY_META } from '@/types';
-import type { RoomPublic, Player, PublicRoomSummary } from '@/types';
+import type { RoomPublic, Player, PublicRoomSummary, QuestionPublic } from '@/types';
 import ThemeToggle from './ThemeToggle';
 
 export default function LandingPage() {
@@ -80,11 +80,16 @@ export default function LandingPage() {
     saveName(name);
     store.reset();
     const socket = connectSocket();
-    socket.emit('room:join', { code: targetCode, playerName: name }, (err: string | null, data?: { room: RoomPublic; player: Player; token: string }) => {
+    socket.emit('room:join', { code: targetCode, playerName: name }, (err: string | null, data?: { room: RoomPublic; player: Player; token: string; question: QuestionPublic | null; roundNumber: number; timeLimit: number; timeRemaining: number }) => {
       if (err || !data) { setError(err || 'Failed to join'); setLoading(false); return; }
       saveToken(data.token);
       store.setRoom(data.room);
       store.setMyPlayer(data.player);
+      // Joined a game already in progress — drop straight onto the live board.
+      if (data.question && data.room.state === 'playing') {
+        store.setQuestion(data.question, data.roundNumber, data.room.totalQuestions, data.timeLimit);
+        if (typeof data.timeRemaining === 'number') store.setTimer(data.timeRemaining);
+      }
       router.push(`/room/${targetCode}`);
     });
   }
@@ -169,10 +174,20 @@ export default function LandingPage() {
                 >
                   <div className="flex items-start justify-between">
                     <span className="font-mono text-2xl font-semibold tracking-[0.18em] text-ink">{r.code}</span>
-                    <span className="badge">
-                      <span className="h-1.5 w-1.5 rounded-full bg-success" />
-                      {r.playerCount}/50
-                    </span>
+                    <span className="badge">{r.playerCount}/50</span>
+                  </div>
+                  <div className="mt-2.5">
+                    {r.state === 'waiting' ? (
+                      <span className="badge text-success-deep">
+                        <span className="h-1.5 w-1.5 rounded-full bg-success" />
+                        In lobby — starting soon
+                      </span>
+                    ) : (
+                      <span className="badge text-warning-deep">
+                        <span className="h-1.5 w-1.5 animate-pulse rounded-full bg-warning" />
+                        Live · Round {r.roundNumber}/{r.totalRounds}
+                      </span>
+                    )}
                   </div>
                   <div className="mt-3 flex items-center justify-between text-xs text-mute">
                     <span>Host: <span className="font-medium text-body">{r.hostName}</span></span>
@@ -185,7 +200,9 @@ export default function LandingPage() {
                         return meta ? <span key={c} title={meta.label}>{meta.icon}</span> : null;
                       })}
                     </div>
-                    <span className="text-sm font-medium text-link transition-transform group-hover:translate-x-0.5">Join →</span>
+                    <span className="text-sm font-medium text-link transition-transform group-hover:translate-x-0.5">
+                      {r.state === 'waiting' ? 'Join →' : 'Jump in →'}
+                    </span>
                   </div>
                 </button>
               ))}

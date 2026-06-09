@@ -59,6 +59,10 @@ export interface PublicRoomSummary {
   totalRounds: number;
   roundTime: number;
   categories: Category[];
+  /** Current room state so the browser can show "In lobby" vs "In progress". */
+  state: RoomState;
+  /** 1-based round number when a game is in progress (0 in the lobby). */
+  roundNumber: number;
 }
 
 // Socket event payloads
@@ -77,7 +81,7 @@ export interface ServerToClientEvents {
 
 export interface ClientToServerEvents {
   'room:create': (playerName: string, callback: (data: { code: string; room: RoomPublic; player: Player; token: string }) => void) => void;
-  'room:join': (data: { code: string; playerName: string }, callback: (err: string | null, data?: { room: RoomPublic; player: Player; token: string }) => void) => void;
+  'room:join': (data: { code: string; playerName: string }, callback: (err: string | null, data?: { room: RoomPublic; player: Player; token: string; question: QuestionPublic | null; roundNumber: number; timeLimit: number; timeRemaining: number }) => void) => void;
   'room:rejoin': (data: { code: string; playerName: string; token: string }, callback: (err: string | null, data?: { room: RoomPublic; player: Player; token: string; question: QuestionPublic | null; roundNumber: number; timeLimit: number }) => void) => void;
   'room:watch': (data: { code: string }, callback: (err: string | null, data?: { room: RoomPublic; question: QuestionPublic | null; roundNumber: number; timeLimit: number }) => void) => void;
   'game:start': () => void;
