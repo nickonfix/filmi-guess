@@ -3,10 +3,18 @@ import { io, Socket } from 'socket.io-client';
 
 let socket: Socket | null = null;
 
+// Public Railway backend used by the deployed site.
+const PROD_SERVER_URL = 'https://filmi-guess-production.up.railway.app';
+
 function getServerUrl(): string {
   if (process.env.NEXT_PUBLIC_SERVER_URL) return process.env.NEXT_PUBLIC_SERVER_URL;
-  if (typeof window !== 'undefined') return `http://${window.location.hostname}:3001`;
-  return 'http://localhost:3001';
+  if (typeof window !== 'undefined') {
+    const host = window.location.hostname;
+    // Local development talks to the local server; anything else is production.
+    if (host === 'localhost' || host === '127.0.0.1') return `http://${host}:3001`;
+    return PROD_SERVER_URL;
+  }
+  return PROD_SERVER_URL;
 }
 
 export function getSocket(): Socket {
