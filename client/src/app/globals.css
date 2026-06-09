@@ -2,43 +2,234 @@
 @tailwind components;
 @tailwind utilities;
 
+/* ------------------------------------------------------------------ */
+/* Base                                                                */
+/* ------------------------------------------------------------------ */
 :root {
-  --font-display: 'Inter', sans-serif;
+  --font-sans: 'Inter', system-ui, sans-serif;
+  --font-mono: 'JetBrains Mono', ui-monospace, monospace;
 }
 
 * {
   box-sizing: border-box;
 }
 
+html {
+  -webkit-text-size-adjust: 100%;
+}
+
 body {
-  background-color: #0f0f1a;
-  color: #ffffff;
-  font-family: var(--font-display);
+  background-color: #fafafa;
+  color: #171717;
+  font-family: var(--font-sans);
+  font-feature-settings: 'ss01', 'cv01', 'cv02', 'cv11';
   -webkit-font-smoothing: antialiased;
+  -moz-osx-font-smoothing: grayscale;
+  text-rendering: optimizeLegibility;
 }
 
-/* Custom scrollbar */
-::-webkit-scrollbar { width: 6px; }
-::-webkit-scrollbar-track { background: #1a1a2e; }
-::-webkit-scrollbar-thumb { background: #2a2a4a; border-radius: 3px; }
-::-webkit-scrollbar-thumb:hover { background: #ff6b35; }
-
-/* Timer bar animation */
-@keyframes timerShrink {
-  from { transform: scaleX(1); }
-  to { transform: scaleX(0); }
+::selection {
+  background-color: rgba(0, 112, 243, 0.18);
+  color: #171717;
 }
 
+/* Custom scrollbar — light */
+::-webkit-scrollbar {
+  width: 8px;
+  height: 8px;
+}
+::-webkit-scrollbar-track {
+  background: transparent;
+}
+::-webkit-scrollbar-thumb {
+  background: #ebebeb;
+  border-radius: 8px;
+}
+::-webkit-scrollbar-thumb:hover {
+  background: #d4d4d4;
+}
+
+/* ------------------------------------------------------------------ */
+/* Typography utilities — aggressive negative tracking is the voice    */
+/* ------------------------------------------------------------------ */
+@layer components {
+  .display-2xl {
+    @apply font-semibold leading-[1.02];
+    font-size: clamp(2.75rem, 6vw, 4.5rem); /* 44 → 72 */
+    letter-spacing: -0.05em;
+  }
+  .display-xl {
+    @apply text-5xl font-semibold leading-none; /* 48 */
+    letter-spacing: -0.05em;
+  }
+  .display-lg {
+    @apply text-[2rem] font-semibold leading-10; /* 32 / 40 */
+    letter-spacing: -0.04em;
+  }
+  .display-md {
+    @apply text-2xl font-semibold leading-8; /* 24 / 32 */
+    letter-spacing: -0.04em;
+  }
+  .display-sm {
+    @apply text-xl font-semibold leading-7; /* 20 / 28 */
+    letter-spacing: -0.03em;
+  }
+  .body-lg {
+    @apply text-lg font-normal leading-7; /* 18 / 28 */
+  }
+  .eyebrow {
+    @apply font-mono text-xs font-normal uppercase text-mute;
+    letter-spacing: 0.08em;
+  }
+
+  /* ---------------------------------------------------------------- */
+  /* Mesh gradient — the brand's only decorative chrome                */
+  /* ---------------------------------------------------------------- */
+  .mesh {
+    background-color: #fafafa;
+    background-image:
+      radial-gradient(at 18% 18%, rgba(0, 124, 240, 0.22) 0px, transparent 50%),
+      radial-gradient(at 82% 8%, rgba(0, 223, 216, 0.20) 0px, transparent 45%),
+      radial-gradient(at 72% 48%, rgba(121, 40, 202, 0.16) 0px, transparent 50%),
+      radial-gradient(at 8% 62%, rgba(255, 0, 128, 0.16) 0px, transparent 50%),
+      radial-gradient(at 92% 88%, rgba(249, 203, 40, 0.20) 0px, transparent 45%),
+      radial-gradient(at 32% 96%, rgba(255, 77, 77, 0.14) 0px, transparent 50%);
+  }
+  .mesh-dark {
+    background-color: #171717;
+    background-image:
+      radial-gradient(at 18% 18%, rgba(0, 124, 240, 0.30) 0px, transparent 50%),
+      radial-gradient(at 82% 12%, rgba(0, 223, 216, 0.22) 0px, transparent 45%),
+      radial-gradient(at 75% 55%, rgba(121, 40, 202, 0.28) 0px, transparent 50%),
+      radial-gradient(at 5% 70%, rgba(255, 0, 128, 0.22) 0px, transparent 50%),
+      radial-gradient(at 92% 90%, rgba(249, 203, 40, 0.18) 0px, transparent 45%);
+  }
+  .mesh-drift {
+    animation: meshDrift 24s ease-in-out infinite;
+    will-change: transform;
+  }
+
+  /* Multi-stop gradient text — used sparingly on a single hero word */
+  .text-gradient {
+    background-image: linear-gradient(
+      90deg,
+      #007cf0 0%,
+      #00dfd8 25%,
+      #7928ca 50%,
+      #ff0080 75%,
+      #f9cb28 100%
+    );
+    -webkit-background-clip: text;
+    background-clip: text;
+    color: transparent;
+    background-size: 200% auto;
+  }
+  .text-gradient-animate {
+    animation: shimmer 6s linear infinite;
+  }
+
+  /* ---------------------------------------------------------------- */
+  /* Buttons                                                           */
+  /* ---------------------------------------------------------------- */
+  .btn {
+    @apply inline-flex items-center justify-center gap-2 font-medium
+      transition-all duration-150 select-none disabled:opacity-40
+      disabled:cursor-not-allowed disabled:pointer-events-none
+      focus-visible:outline-none;
+  }
+
+  /* Marketing-scale pills (100px radius) */
+  .btn-primary {
+    @apply btn rounded-pill bg-primary text-on-primary text-base px-6 h-12
+      shadow-btn-primary hover:bg-[#383838] active:scale-[0.98];
+  }
+  .btn-secondary {
+    @apply btn rounded-pill bg-canvas text-ink text-base px-6 h-12
+      shadow-btn hover:bg-canvas-soft active:scale-[0.98];
+  }
+
+  /* Nav / in-app scale pills */
+  .btn-primary-sm {
+    @apply btn rounded-pill bg-primary text-on-primary text-sm px-4 h-9
+      shadow-btn-primary hover:bg-[#383838] active:scale-[0.98];
+  }
+  .btn-secondary-sm {
+    @apply btn rounded-pill bg-canvas text-ink text-sm px-4 h-9
+      shadow-btn hover:bg-canvas-soft active:scale-[0.98];
+  }
+
+  /* Nav 6px-radius squares */
+  .nav-cta-signup {
+    @apply btn rounded-sm bg-primary text-on-primary text-sm h-8 px-3
+      hover:bg-[#383838] active:scale-[0.98];
+  }
+  .nav-cta-ghost {
+    @apply btn rounded-sm bg-canvas text-ink text-sm h-8 px-3 shadow-hairline
+      hover:bg-canvas-soft active:scale-[0.98];
+  }
+
+  /* ---------------------------------------------------------------- */
+  /* Surfaces                                                          */
+  /* ---------------------------------------------------------------- */
+  .card {
+    @apply bg-canvas rounded-md shadow-card;
+  }
+  .card-md {
+    @apply bg-canvas rounded-lg shadow-card-md;
+  }
+  .card-lg {
+    @apply bg-canvas rounded-lg shadow-card-lg;
+  }
+  .card-soft {
+    @apply bg-canvas-soft rounded-md shadow-hairline;
+  }
+
+  /* Pill tabs / chips */
+  .pill-tab {
+    @apply inline-flex items-center gap-1.5 rounded-pill-sm bg-canvas text-ink
+      text-sm px-4 py-1.5 shadow-hairline transition-colors
+      hover:bg-canvas-soft;
+  }
+  .pill-tab-active {
+    @apply bg-primary text-on-primary shadow-none hover:bg-primary;
+  }
+
+  .badge {
+    @apply inline-flex items-center gap-1 rounded-full bg-canvas-soft
+      text-body text-xs px-2.5 py-1 shadow-hairline;
+  }
+
+  /* ---------------------------------------------------------------- */
+  /* Inputs                                                            */
+  /* ---------------------------------------------------------------- */
+  .input-field {
+    @apply w-full bg-canvas text-ink rounded-sm px-3 h-10 text-sm
+      shadow-hairline placeholder:text-mute transition-shadow
+      focus:outline-none focus:shadow-focus;
+  }
+  .input-field-lg {
+    @apply input-field h-12 text-base px-4;
+  }
+}
+
+/* ------------------------------------------------------------------ */
+/* Animations preserved from the game                                 */
+/* ------------------------------------------------------------------ */
 .timer-bar {
   transform-origin: left;
 }
 
-/* Correct answer flash */
 @keyframes correctFlash {
   0%, 100% { background-color: transparent; }
-  50% { background-color: rgba(34, 197, 94, 0.3); }
+  50% { background-color: rgba(12, 206, 107, 0.18); }
 }
-
 .correct-flash {
   animation: correctFlash 0.5s ease-in-out;
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .mesh-drift,
+  .text-gradient-animate {
+    animation: none;
+  }
 }

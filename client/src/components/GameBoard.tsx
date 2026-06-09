@@ -17,9 +17,9 @@ const CATEGORY_LABELS: Record<string, string> = {
 };
 
 const DIFFICULTY_COLORS: Record<string, string> = {
-  easy: 'text-green-400 bg-green-400/10',
-  medium: 'text-yellow-400 bg-yellow-400/10',
-  hard: 'text-red-400 bg-red-400/10',
+  easy: 'text-success-deep bg-success-soft',
+  medium: 'text-warning-deep bg-warning-soft',
+  hard: 'text-error-deep bg-error-soft',
 };
 
 function JoinGameBanner() {
@@ -46,14 +46,9 @@ function JoinGameBanner() {
   }
 
   return (
-    <div className="fixed bottom-0 inset-x-0 z-50 bg-brand-dark/95 backdrop-blur border-t border-brand-border px-4 py-3 flex items-center justify-between gap-4">
-      <p className="text-sm text-gray-400">You&apos;re watching as <span className="text-white font-semibold">{savedName || '...'}</span></p>
-      <button
-        onClick={joinGame}
-        className="bg-brand-orange hover:bg-orange-500 text-white font-bold px-6 py-2 rounded-xl text-sm transition-all hover:scale-[1.02] active:scale-[0.98] flex-shrink-0"
-      >
-        Join Game
-      </button>
+    <div className="fixed inset-x-0 bottom-0 z-50 flex items-center justify-between gap-4 border-t border-hairline bg-canvas/90 px-4 py-3 backdrop-blur-md">
+      <p className="text-sm text-body">Watching as <span className="font-semibold text-ink">{savedName || '…'}</span></p>
+      <button onClick={joinGame} className="btn-primary-sm flex-shrink-0">Join game</button>
     </div>
   );
 }
@@ -77,117 +72,112 @@ export default function GameBoard() {
   const timerPct = timeLimit > 0 ? (timeRemaining / timeLimit) * 100 : 0;
 
   const timerColor = timeRemaining > 15
-    ? 'bg-green-500'
+    ? 'bg-success'
     : timeRemaining > 8
-    ? 'bg-yellow-500'
-    : 'bg-red-500';
+    ? 'bg-warning'
+    : 'bg-error';
 
   return (
-    <div className={clsx('min-h-screen flex flex-col', spectating && 'pb-16')}>
+    <div className={clsx('flex min-h-screen flex-col bg-canvas-soft', spectating && 'pb-16')}>
       {/* Top bar */}
-      <header className="bg-brand-card border-b border-brand-border px-4 py-3">
-        <div className="max-w-6xl mx-auto flex items-center justify-between">
-          <span className="font-black text-xl">
-            <span className="text-brand-orange">Filmi</span>
-            <span className="text-brand-gold">Guess</span>
+      <header className="sticky top-0 z-20 border-b border-hairline bg-canvas-soft/85 backdrop-blur-md">
+        <div className="mx-auto flex h-16 max-w-page items-center justify-between px-4 sm:px-6">
+          <span className="text-lg font-semibold tracking-[-0.02em] text-ink">
+            Filmi<span className="text-gradient">Guess</span>
           </span>
-          <div className="flex items-center gap-4">
-            <span className="text-sm text-gray-400">
-              Round <span className="text-white font-bold">{roundNumber}</span>/{totalRounds}
+          <div className="flex items-center gap-3">
+            <span className="font-mono text-sm text-mute">
+              Round <span className="font-medium text-ink">{roundNumber}</span>/{totalRounds}
             </span>
             {myPlayer && (
-              <div className="flex items-center gap-2 bg-brand-dark rounded-lg px-3 py-1.5">
-                <span className="text-brand-gold font-bold">{myPlayer.score}</span>
-                <span className="text-gray-500 text-xs">pts</span>
+              <div className="flex items-center gap-1.5 rounded-sm bg-canvas px-3 py-1.5 shadow-hairline">
+                <span className="font-mono font-semibold text-ink">{myPlayer.score}</span>
+                <span className="text-xs text-mute">pts</span>
               </div>
             )}
           </div>
         </div>
+        {/* Timer bar */}
+        <div className="h-1 bg-hairline">
+          <div
+            className={clsx('h-full transition-all duration-1000 ease-linear', timerColor)}
+            style={{ width: `${timerPct}%` }}
+          />
+        </div>
       </header>
 
-      {/* Timer bar */}
-      <div className="h-1.5 bg-brand-dark">
-        <div
-          className={clsx('h-full transition-all duration-1000 ease-linear', timerColor)}
-          style={{ width: `${timerPct}%` }}
-        />
-      </div>
-
-      <div className="flex-1 flex flex-col lg:flex-row max-w-6xl mx-auto w-full px-4 py-6 gap-6">
+      <div className="mx-auto flex w-full max-w-page flex-1 flex-col gap-6 px-4 py-6 sm:px-6 lg:flex-row">
         {/* Main game area */}
-        <div className="flex-1 flex flex-col gap-4">
+        <div className="flex flex-1 flex-col gap-4">
           {/* Question image */}
-          <div className="bg-brand-card border border-brand-border rounded-2xl overflow-hidden relative">
+          <div className="card-md relative overflow-hidden">
             {currentQuestion ? (
               <div className="relative w-full" style={{ paddingBottom: '75%' }}>
                 {/* eslint-disable-next-line @next/next/no-img-element */}
                 <img
                   src={currentQuestion.imageUrl}
                   alt="Guess who?"
-                  className="absolute inset-0 w-full h-full object-cover"
+                  className="absolute inset-0 h-full w-full object-cover"
                   referrerPolicy="no-referrer"
                 />
                 {/* Category badge */}
-                <div className="absolute top-3 left-3 flex gap-2 z-10">
-                  <span className="text-xs bg-black/70 backdrop-blur rounded-full px-3 py-1 text-white">
+                <div className="absolute left-3 top-3 z-10 flex gap-2">
+                  <span className="rounded-full bg-ink/80 px-3 py-1 text-xs font-medium text-on-primary backdrop-blur-sm">
                     {CATEGORY_LABELS[currentQuestion.category]}
                   </span>
-                  <span className={clsx('text-xs rounded-full px-3 py-1 backdrop-blur', DIFFICULTY_COLORS[currentQuestion.difficulty])}>
+                  <span className={clsx('rounded-full px-3 py-1 text-xs font-medium capitalize backdrop-blur-sm', DIFFICULTY_COLORS[currentQuestion.difficulty])}>
                     {currentQuestion.difficulty}
                   </span>
                 </div>
                 {/* Timer overlay */}
-                <div className="absolute top-3 right-3 w-12 h-12 rounded-full bg-black/70 backdrop-blur flex items-center justify-center z-10">
-                  <span className={clsx('text-xl font-black', timeRemaining <= 5 ? 'text-red-400 animate-pulse' : 'text-white')}>
+                <div className="absolute right-3 top-3 z-10 flex h-12 w-12 items-center justify-center rounded-full bg-ink/80 backdrop-blur-sm">
+                  <span className={clsx('font-mono text-xl font-semibold', timeRemaining <= 5 ? 'animate-pulse text-error' : 'text-on-primary')}>
                     {timeRemaining}
                   </span>
                 </div>
                 {/* Between rounds overlay */}
                 {isBetweenRounds && lastRoundAnswer && (
-                  <div className="absolute inset-0 bg-black/90 flex flex-col items-center justify-center z-10 px-4 gap-4">
-                    {/* Correct answer */}
+                  <div className="absolute inset-0 z-10 flex flex-col items-center justify-center gap-4 bg-primary/95 px-4 backdrop-blur-sm">
                     <div className="text-center">
-                      <p className="text-gray-400 text-xs uppercase tracking-widest mb-1">The answer was</p>
-                      <p className="text-3xl font-black text-brand-gold leading-tight">{lastRoundAnswer}</p>
+                      <p className="eyebrow mb-1 text-white/50">The answer was</p>
+                      <p className="display-md leading-tight text-gradient">{lastRoundAnswer}</p>
                     </div>
 
-                    <div className="w-12 h-px bg-brand-border" />
+                    <div className="h-px w-12 bg-white/15" />
 
-                    {/* First guesser */}
                     {roundWinners.length > 0 ? (
                       <div className="text-center">
-                        <p className="text-gray-400 text-xs uppercase tracking-widest mb-1">First to guess</p>
+                        <p className="eyebrow mb-1 text-white/50">First to guess</p>
                         <div className="flex items-center justify-center gap-2">
                           <span className="text-xl">🥇</span>
-                          <span className="text-white font-bold text-lg">{roundWinners[0].playerName}</span>
-                          <span className="text-brand-orange font-bold text-sm">+{roundWinners[0].pointsEarned}</span>
+                          <span className="text-lg font-semibold text-on-primary">{roundWinners[0].playerName}</span>
+                          <span className="font-mono text-sm font-medium text-success">+{roundWinners[0].pointsEarned}</span>
                         </div>
-                        <p className="text-gray-500 text-xs mt-0.5">"{roundWinners[0].answer}"</p>
+                        <p className="mt-0.5 text-xs text-white/40">&ldquo;{roundWinners[0].answer}&rdquo;</p>
                       </div>
                     ) : (
                       <div className="text-center">
-                        <p className="text-gray-400 text-xs uppercase tracking-widest mb-1">First to guess</p>
-                        <p className="text-gray-500 text-sm">Nobody guessed this round</p>
+                        <p className="eyebrow mb-1 text-white/50">First to guess</p>
+                        <p className="text-sm text-white/40">Nobody guessed this round</p>
                       </div>
                     )}
 
-                    <div className="w-12 h-px bg-brand-border" />
+                    <div className="h-px w-12 bg-white/15" />
 
-                    {/* Image submitted by */}
                     {currentQuestion && (
                       <div className="text-center">
-                        <p className="text-gray-600 text-xs uppercase tracking-widest mb-0.5">Image submitted by</p>
-                        <p className="text-gray-400 text-sm font-medium">{currentQuestion.submittedBy}</p>
+                        <p className="eyebrow mb-0.5 text-white/40">Image submitted by</p>
+                        <p className="text-sm font-medium text-white/70">{currentQuestion.submittedBy}</p>
                       </div>
                     )}
                   </div>
                 )}
               </div>
             ) : (
-              <div className="flex items-center justify-center bg-brand-dark" style={{ paddingBottom: '75%', position: 'relative' }}>
-                <div className="absolute inset-0 flex flex-col items-center justify-center text-gray-500">
-                  <div className="text-4xl mb-2">🎬</div>
-                  <p>Loading question...</p>
+              <div className="relative flex items-center justify-center bg-canvas-soft-2" style={{ paddingBottom: '75%' }}>
+                <div className="absolute inset-0 flex flex-col items-center justify-center text-mute">
+                  <div className="mb-2 text-4xl">🎬</div>
+                  <p className="font-mono text-sm">Loading question…</p>
                 </div>
               </div>
             )}
@@ -195,9 +185,9 @@ export default function GameBoard() {
 
           {/* Hint */}
           {currentQuestion && !isBetweenRounds && (
-            <div className="bg-brand-card border border-brand-border rounded-xl px-4 py-3 flex items-start gap-2">
-              <span className="text-brand-gold">💡</span>
-              <p className="text-gray-300 text-sm">{currentQuestion.hint}</p>
+            <div className="card flex items-start gap-2 px-4 py-3">
+              <span className="text-warning">💡</span>
+              <p className="text-sm text-body">{currentQuestion.hint}</p>
             </div>
           )}
 
@@ -208,13 +198,13 @@ export default function GameBoard() {
 
           {/* Winners this round */}
           {roundWinners.length > 0 && (
-            <div className="bg-brand-card border border-brand-border rounded-xl p-4 space-y-2">
+            <div className="card space-y-2 p-4">
               {roundWinners.map(w => (
-                <div key={w.playerId} className="flex items-center gap-3 text-sm animate-slide-up">
+                <div key={w.playerId} className="flex animate-slide-up items-center gap-3 text-sm">
                   <span className="text-lg">{w.position === 1 ? '🥇' : w.position === 2 ? '🥈' : '🥉'}</span>
-                  <span className="font-medium">{w.playerName}</span>
-                  <span className="text-gray-500">"{w.answer}"</span>
-                  <span className="ml-auto text-brand-gold font-bold">+{w.pointsEarned}</span>
+                  <span className="font-medium text-ink">{w.playerName}</span>
+                  <span className="text-mute">&ldquo;{w.answer}&rdquo;</span>
+                  <span className="ml-auto font-mono font-semibold text-success-deep">+{w.pointsEarned}</span>
                 </div>
               ))}
             </div>
@@ -222,7 +212,7 @@ export default function GameBoard() {
         </div>
 
         {/* Sidebar */}
-        <div className="lg:w-72 flex flex-col gap-4">
+        <div className="flex flex-col gap-4 lg:w-72">
           <PlayerList />
           <ChatPanel />
         </div>

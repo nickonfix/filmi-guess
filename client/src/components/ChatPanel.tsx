@@ -12,15 +12,15 @@ export default function ChatPanel() {
   }, [chatMessages]);
 
   return (
-    <div className="bg-brand-card border border-brand-border rounded-2xl p-4 flex flex-col h-64">
-      <h3 className="text-gray-400 text-xs font-medium uppercase tracking-wider mb-3 flex-shrink-0">Chat</h3>
-      <div className="flex-1 overflow-y-auto space-y-1 text-sm">
+    <div className="card flex h-64 flex-col p-4">
+      <h3 className="eyebrow mb-3 flex-shrink-0">Chat</h3>
+      <div className="flex-1 space-y-1 overflow-y-auto text-sm">
         {chatMessages.map((msg, i) => (
           <div key={i} className="animate-slide-up">
-            <span className={clsx('font-medium', msg.playerId === myPlayer?.id ? 'text-brand-orange' : 'text-gray-300')}>
+            <span className={clsx('font-medium', msg.playerId === myPlayer?.id ? 'text-link' : 'text-ink')}>
               {msg.playerName}:
             </span>{' '}
-            <span className={clsx(msg.isCorrect ? 'text-green-400 font-medium' : 'text-gray-400')}>
+            <span className={clsx(msg.isCorrect ? 'font-medium text-success-deep' : 'text-body')}>
               {msg.isCorrect ? `✓ ${msg.message}` : msg.message}
             </span>
           </div>

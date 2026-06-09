@@ -24,8 +24,8 @@ export default function AnswerInput({ disabled }: Props) {
   return (
     <div className="relative">
       {disabled ? (
-        <div className="bg-green-500/10 border border-green-500/30 rounded-xl px-4 py-3 text-center text-green-400 font-medium">
-          Correct! Waiting for next round...
+        <div className="rounded-md bg-success-soft px-4 py-3 text-center font-medium text-success-deep shadow-hairline">
+          ✓ Correct! Waiting for next round…
         </div>
       ) : (
         <div className="flex gap-2">
@@ -36,12 +36,13 @@ export default function AnswerInput({ disabled }: Props) {
             onChange={e => setValue(e.target.value)}
             onKeyDown={e => e.key === 'Enter' && submit()}
             maxLength={100}
-            placeholder="Type your answer and press Enter..."
-            className="flex-1 bg-brand-card border border-brand-border rounded-xl px-4 py-3 text-white placeholder-gray-500 focus:outline-none focus:border-brand-orange transition-colors text-lg"
+            placeholder="Type your answer and press Enter…"
+            className="input-field-lg flex-1"
           />
           <button
             onClick={submit}
-            className="bg-brand-orange hover:bg-orange-500 text-white font-bold px-6 rounded-xl transition-colors"
+            className="btn-primary aspect-square h-12 rounded-md px-0 text-lg"
+            aria-label="Submit answer"
           >
             →
           </button>
