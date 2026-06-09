@@ -1,0 +1,29 @@
+# Fly.io config for the FilmiGuess socket server.
+# NOTE: rooms are stored in memory, so this MUST run as a single machine that
+# never auto-stops — otherwise active rooms get wiped. Keep min/max at 1.
+
+app = "filmi-guess-server"      # <-- change to a globally-unique name if this is taken
+primary_region = "bom"          # Mumbai (closest to India); e.g. "sin" Singapore as alt
+
+[build]
+
+[env]
+  PORT = "8080"
+
+[http_service]
+  internal_port = 8080
+  force_https = true
+  auto_stop_machines = false    # never stop — in-memory rooms would be lost
+  auto_start_machines = true
+  min_machines_running = 1
+
+  [[http_service.checks]]
+    interval = "30s"
+    timeout = "5s"
+    grace_period = "10s"
+    method = "GET"
+    path = "/health"
+
+[[vm]]
+  size = "shared-cpu-1x"
+  memory = "256mb"
