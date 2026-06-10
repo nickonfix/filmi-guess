@@ -3,95 +3,24 @@
 @tailwind utilities;
 
 /* ------------------------------------------------------------------ */
-/* Theme tokens — JKLM-inspired cream / teal / green party palette     */
+/* Theme tokens                                                        */
 /* ------------------------------------------------------------------ */
 :root {
-  --font-sans: 'Nunito', system-ui, sans-serif;
-  --font-display: 'Fredoka', 'Nunito', sans-serif;
+  --font-sans: 'Inter', system-ui, sans-serif;
   --font-mono: 'JetBrains Mono', ui-monospace, monospace;
 
   /* Light (default) — values are space-separated RGB for <alpha-value> */
-  --ink: 45 40 33;
-  --body: 92 84 72;
-  --mute: 143 132 116;
-  --on-primary: 255 255 255;
-  --primary: 26 176 162;       /* teal */
-  --primary-lip: 14 124 114;   /* deeper teal — chunky button "lip" */
-  --band: 18 48 41;            /* deep teal-green spotlight */
-  --canvas: 255 252 245;       /* warm white panel */
-  --canvas-soft: 244 236 221;  /* cream page */
-  --canvas-soft-2: 237 227 208;
-  --hairline: 224 214 195;
-  --hairline-strong: 176 162 140;
-  --btn-lip-2: 209 195 172;    /* lip for light (secondary) buttons */
-  --link: 19 158 146;
-  --link-deep: 15 124 114;
-  --success-soft: 218 240 222;
-  --success-deep: 47 143 82;
-  --error-soft: 250 222 214;
-  --error-deep: 192 64 44;
-  --warning-soft: 251 234 203;
-  --warning-deep: 181 120 26;
-
-  --sh-hairline: inset 0 0 0 1.5px rgba(120, 100, 70, 0.14);
-  --sh-card: 0 2px 0 rgba(120, 100, 70, 0.05), 0 6px 16px -10px rgba(80, 60, 30, 0.20), inset 0 0 0 1.5px rgba(120, 100, 70, 0.12);
-  --sh-card-md: 0 3px 0 rgba(120, 100, 70, 0.06), 0 12px 26px -12px rgba(80, 60, 30, 0.24), inset 0 0 0 1.5px rgba(120, 100, 70, 0.12);
-  --sh-card-lg: 0 4px 0 rgba(120, 100, 70, 0.07), 0 18px 36px -14px rgba(80, 60, 30, 0.28), inset 0 0 0 1.5px rgba(120, 100, 70, 0.12);
-  --sh-modal: 0 6px 0 rgba(120, 100, 70, 0.08), 0 28px 56px -16px rgba(60, 45, 20, 0.34), inset 0 0 0 1.5px rgba(120, 100, 70, 0.12);
-  --sh-btn: inset 0 0 0 1.5px rgb(var(--hairline));
-  --sh-btn-primary: 0 1px 2px rgba(0, 0, 0, 0.2);
-}
-
-.dark {
-  --ink: 237 233 224;
-  --body: 176 168 154;
-  --mute: 128 120 108;
-  --on-primary: 255 255 255;
-  --primary: 31 190 176;
-  --primary-lip: 12 108 100;
-  --band: 8 18 16;
-  --canvas: 30 41 38;
-  --canvas-soft: 20 32 29;
-  --canvas-soft-2: 39 52 48;
-  --hairline: 54 68 63;
-  --hairline-strong: 96 112 106;
-  --btn-lip-2: 40 53 49;
-  --link: 78 202 188;
-  --link-deep: 124 222 210;
-  --success-soft: 18 50 32;
-  --success-deep: 86 214 134;
-  --error-soft: 56 26 22;
-  --error-deep: 246 138 120;
-  --warning-soft: 54 42 18;
-  --warning-deep: 246 196 110;
-
-  --sh-hairline: inset 0 0 0 1.5px rgba(255, 255, 255, 0.08);
-  --sh-card: 0 3px 0 rgba(0, 0, 0, 0.35), 0 8px 18px -10px rgba(0, 0, 0, 0.6), inset 0 0 0 1.5px rgba(255, 255, 255, 0.07);
-  --sh-card-md: 0 3px 0 rgba(0, 0, 0, 0.4), 0 12px 26px -12px rgba(0, 0, 0, 0.65), inset 0 0 0 1.5px rgba(255, 255, 255, 0.07);
-  --sh-card-lg: 0 4px 0 rgba(0, 0, 0, 0.45), 0 18px 36px -14px rgba(0, 0, 0, 0.7), inset 0 0 0 1.5px rgba(255, 255, 255, 0.08);
-  --sh-modal: 0 6px 0 rgba(0, 0, 0, 0.5), 0 28px 56px -16px rgba(0, 0, 0, 0.75), inset 0 0 0 1.5px rgba(255, 255, 255, 0.08);
-  --sh-btn: inset 0 0 0 1.5px rgb(var(--hairline));
-  --sh-btn-primary: 0 1px 2px rgba(0, 0, 0, 0.4);
-}
-
-/* ------------------------------------------------------------------ */
-/* Legacy theme scope — the original neutral palette, used only on the  */
-/* in-game panel (the JKLM cream/teal stays everywhere else).           */
-/* ------------------------------------------------------------------ */
-.theme-legacy {
   --ink: 23 23 23;
   --body: 77 77 77;
   --mute: 136 136 136;
   --on-primary: 255 255 255;
   --primary: 23 23 23;
-  --primary-lip: 23 23 23;
   --band: 23 23 23;
   --canvas: 255 255 255;
   --canvas-soft: 250 250 250;
   --canvas-soft-2: 245 245 245;
   --hairline: 235 235 235;
   --hairline-strong: 161 161 161;
-  --btn-lip-2: 222 222 222;
   --link: 0 112 243;
   --link-deep: 7 97 209;
   --success-soft: 214 245 227;
@@ -105,26 +34,23 @@
   --sh-card: 0px 1px 1px rgba(0, 0, 0, 0.02), 0px 2px 2px rgba(0, 0, 0, 0.04), inset 0 0 0 1px rgba(0, 0, 0, 0.06);
   --sh-card-md: 0px 2px 2px rgba(0, 0, 0, 0.04), 0px 8px 8px -8px rgba(0, 0, 0, 0.06), inset 0 0 0 1px rgba(0, 0, 0, 0.06);
   --sh-card-lg: 0px 2px 2px rgba(0, 0, 0, 0.04), 0px 8px 16px -4px rgba(0, 0, 0, 0.08), inset 0 0 0 1px rgba(0, 0, 0, 0.06);
-  --sh-btn: inset 0 0 0 1px rgba(0, 0, 0, 0.06);
+  --sh-modal: 0px 1px 1px rgba(0, 0, 0, 0.02), 0px 8px 16px -4px rgba(0, 0, 0, 0.06), 0px 24px 32px -8px rgba(0, 0, 0, 0.08), inset 0 0 0 1px rgba(0, 0, 0, 0.06);
+  --sh-btn: 0px 1px 2px rgba(0, 0, 0, 0.1), inset 0 0 0 1px rgba(0, 0, 0, 0.06);
   --sh-btn-primary: 0px 1px 2px rgba(0, 0, 0, 0.25);
-
-  background-color: rgb(var(--canvas-soft));
 }
 
-.dark .theme-legacy {
+.dark {
   --ink: 237 237 237;
   --body: 161 161 161;
   --mute: 115 115 115;
   --on-primary: 10 10 10;
   --primary: 237 237 237;
-  --primary-lip: 237 237 237;
   --band: 0 0 0;
   --canvas: 23 23 23;
   --canvas-soft: 10 10 10;
   --canvas-soft-2: 31 31 31;
   --hairline: 42 42 42;
   --hairline-strong: 112 112 112;
-  --btn-lip-2: 42 42 42;
   --link: 88 166 255;
   --link-deep: 130 190 255;
   --success-soft: 16 44 28;
@@ -138,11 +64,9 @@
   --sh-card: 0px 1px 2px rgba(0, 0, 0, 0.4), inset 0 0 0 1px rgba(255, 255, 255, 0.07);
   --sh-card-md: 0px 2px 4px rgba(0, 0, 0, 0.5), 0px 8px 16px -8px rgba(0, 0, 0, 0.6), inset 0 0 0 1px rgba(255, 255, 255, 0.07);
   --sh-card-lg: 0px 4px 8px rgba(0, 0, 0, 0.5), 0px 12px 24px -6px rgba(0, 0, 0, 0.6), inset 0 0 0 1px rgba(255, 255, 255, 0.08);
-}
-
-/* Restore the original multi-stop wordmark gradient inside the legacy panel. */
-.theme-legacy .text-gradient {
-  background-image: linear-gradient(90deg, #007cf0 0%, #00dfd8 25%, #7928ca 50%, #ff0080 75%, #f9cb28 100%);
+  --sh-modal: 0px 8px 24px rgba(0, 0, 0, 0.6), 0px 24px 48px -12px rgba(0, 0, 0, 0.7), inset 0 0 0 1px rgba(255, 255, 255, 0.08);
+  --sh-btn: 0px 1px 2px rgba(0, 0, 0, 0.4), inset 0 0 0 1px rgba(255, 255, 255, 0.1);
+  --sh-btn-primary: 0px 1px 2px rgba(0, 0, 0, 0.4);
 }
 
 /* ------------------------------------------------------------------ */
@@ -160,98 +84,112 @@ body {
   background-color: rgb(var(--canvas-soft));
   color: rgb(var(--ink));
   font-family: var(--font-sans);
-  font-weight: 500;
+  font-feature-settings: 'ss01', 'cv01', 'cv02', 'cv11';
   -webkit-font-smoothing: antialiased;
   -moz-osx-font-smoothing: grayscale;
   text-rendering: optimizeLegibility;
 }
 
 ::selection {
-  background-color: rgba(26, 176, 162, 0.25);
+  background-color: rgba(0, 112, 243, 0.22);
   color: rgb(var(--ink));
 }
 
 /* Custom scrollbar — theme-aware */
 ::-webkit-scrollbar {
-  width: 9px;
-  height: 9px;
+  width: 8px;
+  height: 8px;
 }
 ::-webkit-scrollbar-track {
   background: transparent;
 }
 ::-webkit-scrollbar-thumb {
-  background: rgb(var(--hairline-strong));
-  border-radius: 9px;
+  background: rgb(var(--hairline));
+  border-radius: 8px;
 }
 ::-webkit-scrollbar-thumb:hover {
-  background: rgb(var(--primary));
+  background: rgb(var(--hairline-strong));
 }
 
 /* ------------------------------------------------------------------ */
-/* Typography utilities — friendly rounded display voice               */
+/* Typography utilities — aggressive negative tracking is the voice    */
 /* ------------------------------------------------------------------ */
 @layer components {
   .display-2xl {
-    @apply font-display font-semibold leading-[1.02];
-    font-size: clamp(2.5rem, 7.5vw, 4.75rem); /* 40 → 76 */
-    letter-spacing: -0.01em;
+    @apply font-semibold leading-[1.04];
+    font-size: clamp(2.25rem, 7vw, 4.5rem); /* 36 → 72 */
+    letter-spacing: -0.045em;
   }
   .display-xl {
-    @apply font-display text-5xl font-semibold leading-[1.05];
-    letter-spacing: -0.01em;
+    @apply text-5xl font-semibold leading-none; /* 48 */
+    letter-spacing: -0.05em;
   }
   .display-lg {
-    @apply font-display text-[1.75rem] font-semibold leading-9 sm:text-[2.125rem] sm:leading-[1.1];
-    letter-spacing: -0.005em;
+    @apply text-[1.75rem] font-semibold leading-9 sm:text-[2rem] sm:leading-10; /* 28 → 32 */
+    letter-spacing: -0.04em;
   }
   .display-md {
-    @apply font-display text-2xl font-semibold leading-8;
+    @apply text-2xl font-semibold leading-8; /* 24 / 32 */
+    letter-spacing: -0.04em;
   }
   .display-sm {
-    @apply font-display text-xl font-semibold leading-7;
+    @apply text-xl font-semibold leading-7; /* 20 / 28 */
+    letter-spacing: -0.03em;
   }
   .body-lg {
-    @apply text-base font-medium leading-7 sm:text-lg;
+    @apply text-base font-normal leading-7 sm:text-lg; /* 16 → 18 */
   }
   .eyebrow {
-    @apply font-sans text-xs font-extrabold uppercase text-mute;
-    letter-spacing: 0.07em;
+    @apply font-mono text-xs font-normal uppercase text-mute;
+    letter-spacing: 0.08em;
   }
 
   /* ---------------------------------------------------------------- */
-  /* Soft warm background wash (replaces the old neon mesh)            */
+  /* Mesh gradient — the brand's only decorative chrome                */
   /* ---------------------------------------------------------------- */
   .mesh {
     background-color: rgb(var(--canvas-soft));
     background-image:
-      radial-gradient(at 15% 12%, rgba(26, 176, 162, 0.16) 0px, transparent 46%),
-      radial-gradient(at 85% 8%, rgba(244, 193, 82, 0.20) 0px, transparent 44%),
-      radial-gradient(at 80% 72%, rgba(98, 178, 78, 0.14) 0px, transparent 50%),
-      radial-gradient(at 10% 82%, rgba(239, 111, 94, 0.12) 0px, transparent 50%);
+      radial-gradient(at 18% 18%, rgba(0, 124, 240, 0.22) 0px, transparent 50%),
+      radial-gradient(at 82% 8%, rgba(0, 223, 216, 0.20) 0px, transparent 45%),
+      radial-gradient(at 72% 48%, rgba(121, 40, 202, 0.16) 0px, transparent 50%),
+      radial-gradient(at 8% 62%, rgba(255, 0, 128, 0.16) 0px, transparent 50%),
+      radial-gradient(at 92% 88%, rgba(249, 203, 40, 0.20) 0px, transparent 45%),
+      radial-gradient(at 32% 96%, rgba(255, 77, 77, 0.14) 0px, transparent 50%);
   }
   .dark .mesh {
     background-image:
-      radial-gradient(at 15% 12%, rgba(31, 190, 176, 0.20) 0px, transparent 46%),
-      radial-gradient(at 85% 8%, rgba(244, 193, 82, 0.12) 0px, transparent 44%),
-      radial-gradient(at 80% 72%, rgba(98, 178, 78, 0.16) 0px, transparent 50%),
-      radial-gradient(at 10% 82%, rgba(239, 111, 94, 0.12) 0px, transparent 50%);
+      radial-gradient(at 18% 18%, rgba(0, 124, 240, 0.32) 0px, transparent 50%),
+      radial-gradient(at 82% 8%, rgba(0, 223, 216, 0.24) 0px, transparent 45%),
+      radial-gradient(at 72% 48%, rgba(121, 40, 202, 0.30) 0px, transparent 50%),
+      radial-gradient(at 8% 62%, rgba(255, 0, 128, 0.24) 0px, transparent 50%),
+      radial-gradient(at 92% 88%, rgba(249, 203, 40, 0.18) 0px, transparent 45%),
+      radial-gradient(at 32% 96%, rgba(255, 77, 77, 0.18) 0px, transparent 50%);
   }
   .mesh-dark {
-    background-color: #102a24;
+    background-color: #050505;
     background-image:
-      radial-gradient(at 18% 16%, rgba(31, 190, 176, 0.32) 0px, transparent 50%),
-      radial-gradient(at 84% 18%, rgba(244, 193, 82, 0.18) 0px, transparent 46%),
-      radial-gradient(at 76% 82%, rgba(98, 178, 78, 0.24) 0px, transparent 50%),
-      radial-gradient(at 8% 78%, rgba(239, 111, 94, 0.16) 0px, transparent 50%);
+      radial-gradient(at 18% 18%, rgba(0, 124, 240, 0.30) 0px, transparent 50%),
+      radial-gradient(at 82% 12%, rgba(0, 223, 216, 0.22) 0px, transparent 45%),
+      radial-gradient(at 75% 55%, rgba(121, 40, 202, 0.28) 0px, transparent 50%),
+      radial-gradient(at 5% 70%, rgba(255, 0, 128, 0.22) 0px, transparent 50%),
+      radial-gradient(at 92% 90%, rgba(249, 203, 40, 0.18) 0px, transparent 45%);
   }
   .mesh-drift {
     animation: meshDrift 24s ease-in-out infinite;
     will-change: transform;
   }
 
-  /* Teal → leaf gradient text — used on the wordmark / a hero word */
+  /* Multi-stop gradient text — used sparingly on a single hero word */
   .text-gradient {
-    background-image: linear-gradient(95deg, #1ab0a2 0%, #36c08a 45%, #62b24e 100%);
+    background-image: linear-gradient(
+      90deg,
+      #007cf0 0%,
+      #00dfd8 25%,
+      #7928ca 50%,
+      #ff0080 75%,
+      #f9cb28 100%
+    );
     -webkit-background-clip: text;
     background-clip: text;
     color: transparent;
@@ -262,107 +200,83 @@ body {
   }
 
   /* ---------------------------------------------------------------- */
-  /* Buttons — chunky, pressable, party-game lip                       */
+  /* Buttons                                                           */
   /* ---------------------------------------------------------------- */
   .btn {
-    @apply inline-flex items-center justify-center gap-2 font-display font-semibold
-      transition-transform duration-100 select-none disabled:opacity-40
+    @apply inline-flex items-center justify-center gap-2 font-medium
+      transition-all duration-150 select-none disabled:opacity-40
       disabled:cursor-not-allowed disabled:pointer-events-none
       focus-visible:outline-none;
   }
 
+  /* Marketing-scale pills (100px radius) */
   .btn-primary {
-    @apply btn rounded-xl bg-primary text-on-primary text-base px-6 h-12;
-    box-shadow: 0 4px 0 0 rgb(var(--primary-lip)), 0 8px 16px -6px rgba(20, 50, 40, 0.35);
+    @apply btn rounded-pill bg-primary text-on-primary text-base px-6 h-12
+      shadow-btn-primary hover:opacity-90 active:scale-[0.98];
   }
-  .btn-primary:hover { filter: brightness(1.05); }
-  .btn-primary:active {
-    transform: translateY(3px);
-    box-shadow: 0 1px 0 0 rgb(var(--primary-lip)), 0 3px 8px -5px rgba(20, 50, 40, 0.35);
-  }
-
   .btn-secondary {
-    @apply btn rounded-xl bg-canvas text-ink text-base px-6 h-12;
-    box-shadow: 0 4px 0 0 rgb(var(--btn-lip-2)), 0 7px 14px -8px rgba(20, 50, 40, 0.18), inset 0 0 0 1.5px rgb(var(--hairline));
-  }
-  .btn-secondary:active {
-    transform: translateY(3px);
-    box-shadow: 0 1px 0 0 rgb(var(--btn-lip-2)), inset 0 0 0 1.5px rgb(var(--hairline));
+    @apply btn rounded-pill bg-canvas text-ink text-base px-6 h-12
+      shadow-btn hover:bg-canvas-soft active:scale-[0.98];
   }
 
+  /* Nav / in-app scale pills */
   .btn-primary-sm {
-    @apply btn rounded-lg bg-primary text-on-primary text-sm px-4 h-9;
-    box-shadow: 0 3px 0 0 rgb(var(--primary-lip)), 0 5px 10px -5px rgba(20, 50, 40, 0.32);
-  }
-  .btn-primary-sm:active {
-    transform: translateY(2px);
-    box-shadow: 0 1px 0 0 rgb(var(--primary-lip));
+    @apply btn rounded-pill bg-primary text-on-primary text-sm px-4 h-9
+      shadow-btn-primary hover:opacity-90 active:scale-[0.98];
   }
   .btn-secondary-sm {
-    @apply btn rounded-lg bg-canvas text-ink text-sm px-4 h-9;
-    box-shadow: 0 3px 0 0 rgb(var(--btn-lip-2)), inset 0 0 0 1.5px rgb(var(--hairline));
-  }
-  .btn-secondary-sm:active {
-    transform: translateY(2px);
-    box-shadow: 0 1px 0 0 rgb(var(--btn-lip-2)), inset 0 0 0 1.5px rgb(var(--hairline));
+    @apply btn rounded-pill bg-canvas text-ink text-sm px-4 h-9
+      shadow-btn hover:bg-canvas-soft active:scale-[0.98];
   }
 
-  /* Nav-scale buttons */
+  /* Nav 6px-radius squares */
   .nav-cta-signup {
-    @apply btn rounded-lg bg-primary text-on-primary text-sm h-9 px-4;
-    box-shadow: 0 3px 0 0 rgb(var(--primary-lip));
+    @apply btn rounded-sm bg-primary text-on-primary text-sm h-8 px-3
+      hover:opacity-90 active:scale-[0.98];
   }
-  .nav-cta-signup:active { transform: translateY(2px); box-shadow: 0 1px 0 0 rgb(var(--primary-lip)); }
   .nav-cta-ghost {
-    @apply btn rounded-lg bg-canvas text-ink text-sm h-9 px-4;
-    box-shadow: 0 3px 0 0 rgb(var(--btn-lip-2)), inset 0 0 0 1.5px rgb(var(--hairline));
+    @apply btn rounded-sm bg-canvas text-ink text-sm h-8 px-3 shadow-hairline
+      hover:bg-canvas-soft active:scale-[0.98];
   }
-  .nav-cta-ghost:active { transform: translateY(2px); box-shadow: 0 1px 0 0 rgb(var(--btn-lip-2)), inset 0 0 0 1.5px rgb(var(--hairline)); }
 
   /* ---------------------------------------------------------------- */
   /* Surfaces                                                          */
   /* ---------------------------------------------------------------- */
   .card {
-    @apply bg-canvas rounded-xl shadow-card;
+    @apply bg-canvas rounded-md shadow-card;
   }
   .card-md {
-    @apply bg-canvas rounded-2xl shadow-card-md;
+    @apply bg-canvas rounded-lg shadow-card-md;
   }
   .card-lg {
-    @apply bg-canvas rounded-2xl shadow-card-lg;
+    @apply bg-canvas rounded-lg shadow-card-lg;
   }
   .card-soft {
-    @apply bg-canvas-soft rounded-xl shadow-hairline;
+    @apply bg-canvas-soft rounded-md shadow-hairline;
   }
 
   /* Pill tabs / chips */
   .pill-tab {
-    @apply inline-flex items-center gap-1.5 rounded-pill bg-canvas text-ink
-      text-sm font-semibold px-4 py-2 transition-transform;
-    box-shadow: 0 2px 0 0 rgb(var(--btn-lip-2)), inset 0 0 0 1.5px rgb(var(--hairline));
+    @apply inline-flex items-center gap-1.5 rounded-pill-sm bg-canvas text-ink
+      text-sm px-4 py-1.5 shadow-hairline transition-colors
+      hover:bg-canvas-soft;
   }
   .pill-tab-active {
-    @apply bg-primary text-on-primary;
-    box-shadow: 0 2px 0 0 rgb(var(--primary-lip));
+    @apply bg-primary text-on-primary shadow-none hover:bg-primary;
   }
 
   .badge {
-    @apply inline-flex items-center gap-1 rounded-pill bg-canvas-soft
-      text-body text-xs font-bold px-2.5 py-1;
-    box-shadow: inset 0 0 0 1.5px rgb(var(--hairline));
+    @apply inline-flex items-center gap-1 rounded-full bg-canvas-soft
+      text-body text-xs px-2.5 py-1 shadow-hairline;
   }
 
   /* ---------------------------------------------------------------- */
   /* Inputs                                                            */
   /* ---------------------------------------------------------------- */
   .input-field {
-    @apply w-full bg-canvas text-ink rounded-lg px-3.5 h-11 text-sm font-semibold
-      placeholder:text-mute placeholder:font-normal transition-shadow
-      focus:outline-none;
-    box-shadow: inset 0 0 0 2px rgb(var(--hairline));
-  }
-  .input-field:focus {
-    box-shadow: inset 0 0 0 2px rgb(var(--primary)), 0 0 0 4px rgba(26, 176, 162, 0.18);
+    @apply w-full bg-canvas text-ink rounded-sm px-3 h-10 text-sm
+      shadow-hairline placeholder:text-mute transition-shadow
+      focus:outline-none focus:shadow-focus;
   }
   .input-field-lg {
     @apply input-field h-12 text-base px-4;
@@ -370,7 +284,7 @@ body {
 }
 
 /* ------------------------------------------------------------------ */
-/* Animations                                                          */
+/* Animations preserved from the game                                 */
 /* ------------------------------------------------------------------ */
 .timer-bar {
   transform-origin: left;
@@ -378,27 +292,10 @@ body {
 
 @keyframes correctFlash {
   0%, 100% { background-color: transparent; }
-  50% { background-color: rgba(63, 180, 111, 0.22); }
+  50% { background-color: rgba(12, 206, 107, 0.18); }
 }
 .correct-flash {
   animation: correctFlash 0.5s ease-in-out;
-}
-
-/* Gentle bob for ring avatars / mascot-y elements */
-@keyframes floaty {
-  0%, 100% { transform: translateY(0); }
-  50% { transform: translateY(-4px); }
-}
-
-@keyframes meshDrift {
-  0%, 100% { transform: translate3d(0, 0, 0) scale(1); }
-  33% { transform: translate3d(-2%, 1.5%, 0) scale(1.05); }
-  66% { transform: translate3d(2%, -1%, 0) scale(1.03); }
-}
-
-@keyframes shimmer {
-  0% { background-position: -200% 0; }
-  100% { background-position: 200% 0; }
 }
 
 @media (prefers-reduced-motion: reduce) {

@@ -80,7 +80,7 @@ export default function GameBoard() {
     : 'bg-error';
 
   return (
-    <div className={clsx('theme-legacy flex min-h-screen flex-col bg-canvas-soft', spectating && 'pb-16')}>
+    <div className={clsx('flex min-h-screen flex-col bg-canvas-soft', spectating && 'pb-16')}>
       {/* Top bar */}
       <header className="sticky top-0 z-20 border-b border-hairline bg-canvas-soft/85 backdrop-blur-md">
         <div className="mx-auto flex h-16 max-w-page items-center justify-between px-4 sm:px-6">

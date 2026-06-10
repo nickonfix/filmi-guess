@@ -1,27 +1,18 @@
 import type { Metadata, Viewport } from 'next';
-import { Fredoka, Nunito, JetBrains_Mono } from 'next/font/google';
+import { Inter, JetBrains_Mono } from 'next/font/google';
 import './globals.css';
 
-// Body / UI text — rounded, friendly, highly readable (JKLM-style).
-const nunito = Nunito({
+const inter = Inter({
   subsets: ['latin'],
   variable: '--font-sans',
-  weight: ['400', '500', '600', '700', '800'],
-  display: 'swap',
-});
-
-// Display / headings — chunky rounded party-game voice.
-const fredoka = Fredoka({
-  subsets: ['latin'],
-  variable: '--font-display',
-  weight: ['400', '500', '600', '700'],
+  weight: ['400', '500', '600'],
   display: 'swap',
 });
 
 const jetbrainsMono = JetBrains_Mono({
   subsets: ['latin'],
   variable: '--font-mono',
-  weight: ['400', '500', '700'],
+  weight: ['400', '500'],
   display: 'swap',
 });
 
@@ -74,8 +65,8 @@ export const metadata: Metadata = {
 
 export const viewport: Viewport = {
   themeColor: [
-    { media: '(prefers-color-scheme: light)', color: '#f4ecdd' },
-    { media: '(prefers-color-scheme: dark)', color: '#14201d' },
+    { media: '(prefers-color-scheme: light)', color: '#fafafa' },
+    { media: '(prefers-color-scheme: dark)', color: '#0a0a0a' },
   ],
   colorScheme: 'light dark',
 };
@@ -99,7 +90,7 @@ export default function RootLayout({ children }: { children: React.ReactNode }) 
   };
 
   return (
-    <html lang="en" className={`${nunito.variable} ${fredoka.variable} ${jetbrainsMono.variable}`} suppressHydrationWarning>
+    <html lang="en" className={`${inter.variable} ${jetbrainsMono.variable}`} suppressHydrationWarning>
       <head>
         <script dangerouslySetInnerHTML={{ __html: THEME_INIT }} />
         <script
