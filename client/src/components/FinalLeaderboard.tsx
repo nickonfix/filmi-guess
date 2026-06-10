@@ -1,6 +1,7 @@
 'use client';
 import { getSocket } from '@/lib/socket';
 import { leaveRoom } from '@/lib/leaveRoom';
+import { avatarColor } from '@/lib/avatar';
 import type { PlayerScore } from '@/types';
 
 interface Props {
@@ -62,7 +63,10 @@ export default function FinalLeaderboard({ scores, myId }: Props) {
                   }`}
                 >
                   <span className="w-7 text-center text-lg">{MEDALS[i] || <span className="font-mono text-sm text-mute">{i + 1}</span>}</span>
-                  <div className="flex h-8 w-8 items-center justify-center rounded-full bg-gradient-to-br from-g-develop-start to-g-preview-end text-sm font-semibold text-white">
+                  <div
+                    className="flex h-8 w-8 items-center justify-center rounded-full font-display text-sm font-bold text-white"
+                    style={{ backgroundColor: avatarColor(p.name) }}
+                  >
                     {p.name[0].toUpperCase()}
                   </div>
                   <span className="flex-1 font-medium text-ink">{p.name}</span>

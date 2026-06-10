@@ -5,16 +5,20 @@ import clsx from 'clsx';
 
 export default function ChatPanel() {
   const { chatMessages, myPlayer } = useGameStore();
-  const bottomRef = useRef<HTMLDivElement>(null);
+  const listRef = useRef<HTMLDivElement>(null);
 
+  // Keep the chat pinned to the latest message by scrolling the list itself —
+  // never scrollIntoView, which would yank the whole page (and on mobile shoves
+  // the game board out of view).
   useEffect(() => {
-    bottomRef.current?.scrollIntoView({ behavior: 'smooth' });
+    const el = listRef.current;
+    if (el) el.scrollTop = el.scrollHeight;
   }, [chatMessages]);
 
   return (
     <div className="card flex h-64 flex-col p-4">
       <h3 className="eyebrow mb-3 flex-shrink-0">Chat</h3>
-      <div className="flex-1 space-y-1 overflow-y-auto text-sm">
+      <div ref={listRef} className="flex-1 space-y-1 overflow-y-auto text-sm">
         {chatMessages.map((msg, i) => (
           <div key={i} className="animate-slide-up">
             <span className={clsx('font-medium', msg.playerId === myPlayer?.id ? 'text-link' : 'text-ink')}>
@@ -25,7 +29,6 @@ export default function ChatPanel() {
             </span>
           </div>
         ))}
-        <div ref={bottomRef} />
       </div>
     </div>
   );

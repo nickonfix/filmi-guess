@@ -2,6 +2,7 @@
 import { useState, useEffect } from 'react';
 import { getSocket } from '@/lib/socket';
 import { leaveRoom } from '@/lib/leaveRoom';
+import { avatarColor } from '@/lib/avatar';
 import { useGameStore } from '@/store/gameStore';
 import { getSavedName, getSavedToken, saveToken } from '@/lib/playerName';
 import { CATEGORY_META } from '@/types';
@@ -122,7 +123,10 @@ export default function Lobby({ room, myPlayer }: Props) {
                     p.id === myPlayer?.id ? 'bg-canvas-soft shadow-hairline' : ''
                   }`}
                 >
-                  <div className="flex h-8 w-8 items-center justify-center rounded-full bg-gradient-to-br from-g-develop-start to-g-preview-end text-sm font-semibold text-white">
+                  <div
+                    className="flex h-8 w-8 items-center justify-center rounded-full font-display text-sm font-bold text-white"
+                    style={{ backgroundColor: avatarColor(p.name) }}
+                  >
                     {p.name[0].toUpperCase()}
                   </div>
                   <span className="font-medium text-ink">{p.name}</span>
@@ -160,11 +164,11 @@ export default function Lobby({ room, myPlayer }: Props) {
                   type="range" min={3} max={30} step={1}
                   value={settings.totalRounds}
                   onChange={e => updateSettings({ totalRounds: Number(e.target.value) })}
-                  className="w-full cursor-pointer accent-ink"
+                  className="w-full cursor-pointer accent-primary"
                 />
               ) : (
-                <div className="h-1.5 overflow-hidden rounded-full bg-hairline">
-                  <div className="h-full rounded-full bg-ink" style={{ width: `${((settings.totalRounds - 3) / 27) * 100}%` }} />
+                <div className="h-2 overflow-hidden rounded-full bg-hairline">
+                  <div className="h-full rounded-full bg-primary" style={{ width: `${((settings.totalRounds - 3) / 27) * 100}%` }} />
                 </div>
               )}
             </div>
@@ -183,7 +187,7 @@ export default function Lobby({ room, myPlayer }: Props) {
                       onClick={() => updateSettings({ roundTime: t })}
                       className={`rounded-sm px-3 py-1.5 text-sm font-medium transition-all ${
                         settings.roundTime === t
-                          ? 'bg-ink text-on-primary'
+                          ? 'bg-primary text-on-primary shadow-card'
                           : 'bg-canvas text-body shadow-hairline hover:bg-canvas-soft'
                       }`}
                     >
@@ -209,7 +213,7 @@ export default function Lobby({ room, myPlayer }: Props) {
                       disabled={!isHost}
                       className={`rounded-pill-sm px-3 py-1.5 text-xs font-medium transition-all ${
                         active
-                          ? 'bg-ink text-on-primary'
+                          ? 'bg-primary text-on-primary shadow-card'
                           : 'bg-canvas text-mute shadow-hairline'
                       } ${isHost ? 'cursor-pointer hover:opacity-90' : 'cursor-default'}`}
                     >
