@@ -1,6 +1,7 @@
 'use client';
 import { useState, useEffect } from 'react';
 import { getSocket } from '@/lib/socket';
+import { leaveRoom } from '@/lib/leaveRoom';
 import { useGameStore } from '@/store/gameStore';
 import { getSavedName, getSavedToken, saveToken } from '@/lib/playerName';
 import { CATEGORY_META } from '@/types';
@@ -255,7 +256,12 @@ export default function Lobby({ room, myPlayer }: Props) {
             </div>
           )}
 
-          <a href="/" className="block text-center text-sm text-mute transition-colors hover:text-ink">Leave room</a>
+          <button
+            onClick={leaveRoom}
+            className="mx-auto block rounded-md px-4 py-2 text-sm font-medium text-error transition-colors hover:bg-error-soft"
+          >
+            Leave room
+          </button>
         </div>
       </div>
     </div>

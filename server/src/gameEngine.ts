@@ -28,11 +28,13 @@ function getScores(room: Room) {
   })).sort((a, b) => b.score - a.score);
 }
 
-function calcPoints(position: number, timeRemaining: number, streak: number, roundTime: number): number {
-  const basePoints = position === 1 ? 1000 : position === 2 ? 700 : position === 3 ? 500 : 200;
-  const speedBonus = position <= 3 ? Math.floor((timeRemaining / roundTime) * 200) : 0;
-  const multiplier = streak >= 3 ? 1.5 : 1;
-  return Math.floor((basePoints + speedBonus) * multiplier);
+// Fixed, position-based scoring. The fastest correct guess earns the most and
+// each subsequent guesser earns two fewer points; everyone who eventually gets
+// it right still banks at least one point. Deterministic — no time/streak bonus.
+const POINTS_BY_POSITION = [10, 8, 6, 4, 2];
+
+function calcPoints(position: number): number {
+  return POINTS_BY_POSITION[position - 1] ?? 1;
 }
 
 export function startRound(io: Server, room: Room): void {
@@ -84,7 +86,7 @@ export function handleAnswer(io: Server, room: Room, playerId: string, answer: s
 
   player.streak++;
   const position = room.roundWinners.length + 1;
-  const points = calcPoints(position, room.timeRemaining, player.streak, room.settings.roundTime || DEFAULT_ROUND_TIME);
+  const points = calcPoints(position);
   player.score += points;
 
   const winner: RoundWinner = {

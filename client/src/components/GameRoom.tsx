@@ -1,6 +1,7 @@
 'use client';
 import { useState, useEffect } from 'react';
 import { useGameSocket } from '@/hooks/useGameSocket';
+import { useExitGuard } from '@/hooks/useExitGuard';
 import { connectSocket } from '@/lib/socket';
 import { useGameStore } from '@/store/gameStore';
 import { getSavedName, saveName } from '@/lib/playerName';
@@ -79,6 +80,10 @@ function JoinViaLink({ code }: { code: string }) {
 
 export default function GameRoom({ code }: { code: string }) {
   const { room, myPlayer, finalScores } = useGameSocket();
+
+  // Once the player is actually in a room, trap the Back button so a stray
+  // swipe/back press doesn't yank them out — they leave only via a Leave button.
+  useExitGuard(!!room);
 
   // Arrived via direct link — no name entered yet
   if (!room && !myPlayer) {

@@ -13,6 +13,7 @@ interface GameStore extends GameState {
   addChat: (msg: ChatMessage) => void;
   markAnswered: () => void;
   setSpectating: (v: boolean) => void;
+  returnToLobby: () => void;
   reset: () => void;
 }
 
@@ -74,6 +75,19 @@ export const useGameStore = create<GameStore>(set => ({
   markAnswered: () => set({ hasAnsweredThisRound: true }),
 
   setSpectating: (spectating) => set({ spectating }),
+
+  // Host restarted a finished match — clear the final scoreboard and round state
+  // and zero our own score so the lobby (and the next game) start fresh.
+  returnToLobby: () =>
+    set(state => ({
+      finalScores: null,
+      currentQuestion: null,
+      roundNumber: 0,
+      roundWinners: [],
+      lastRoundAnswer: null,
+      hasAnsweredThisRound: false,
+      myPlayer: state.myPlayer ? { ...state.myPlayer, score: 0, streak: 0 } : null,
+    })),
 
   reset: () => set(initialState),
 }));

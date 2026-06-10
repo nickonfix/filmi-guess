@@ -2,6 +2,7 @@
 import { useState, useEffect } from 'react';
 import { useGameStore } from '@/store/gameStore';
 import { getSocket } from '@/lib/socket';
+import { leaveRoom } from '@/lib/leaveRoom';
 import { getSavedName, getSavedToken, saveToken } from '@/lib/playerName';
 import AnswerInput from './AnswerInput';
 import PlayerList from './PlayerList';
@@ -97,6 +98,13 @@ export default function GameBoard() {
               </div>
             )}
             <ThemeToggle />
+            <button
+              onClick={leaveRoom}
+              className="rounded-sm px-2.5 py-1.5 text-xs font-medium text-error transition-colors hover:bg-error-soft"
+              title="Leave game"
+            >
+              Leave
+            </button>
           </div>
         </div>
         {/* Timer bar */}

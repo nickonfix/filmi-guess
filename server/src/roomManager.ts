@@ -143,6 +143,22 @@ export function startGame(room: Room): void {
   }
 }
 
+/** Return a finished room to the lobby so the host can tweak the rules and replay
+ *  with the same players. Clears game progress and resets everyone's score. */
+export function resetRoomToLobby(room: Room): void {
+  if (room.timer) { clearInterval(room.timer); room.timer = null; }
+  room.state = 'waiting';
+  room.currentQuestion = null;
+  room.currentQuestionIndex = 0;
+  room.questions = [];
+  room.roundWinners = [];
+  room.timeRemaining = 0;
+  for (const player of room.players.values()) {
+    player.score = 0;
+    player.streak = 0;
+  }
+}
+
 const VALID_CATEGORIES: Category[] = ['bollywood_actor', 'hindi_movie', 'south_actor', 'classic_movie'];
 
 function clamp(n: number, min: number, max: number): number {

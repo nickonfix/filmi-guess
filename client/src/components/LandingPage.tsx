@@ -1,7 +1,7 @@
 'use client';
 import { useState, useEffect } from 'react';
 import { useRouter } from 'next/navigation';
-import { connectSocket } from '@/lib/socket';
+import { connectSocket, disconnectSocket } from '@/lib/socket';
 import { useGameStore } from '@/store/gameStore';
 import { getSavedName, saveName, saveToken } from '@/lib/playerName';
 import { CATEGORY_META } from '@/types';
@@ -23,6 +23,10 @@ export default function LandingPage() {
       setKicked(true);
       window.history.replaceState(null, '', '/');
     }
+    // Warm the socket up front so the (free-tier, sleep-prone) server is already
+    // awake and connected by the time the user actually clicks Create/Join —
+    // otherwise that first click waits on a cold start and feels unresponsive.
+    connectSocket();
   }, []);
   const [mode, setMode] = useState<'home' | 'create' | 'join' | 'browse'>('home');
   const [loading, setLoading] = useState(false);
@@ -62,7 +66,20 @@ export default function LandingPage() {
     saveName(name);
     store.reset();
     const socket = connectSocket();
+    // Safety net: if the server is cold and never acks, don't leave the button
+    // stuck on "Creating…" forever — surface a clear retry and reset the socket.
+    let settled = false;
+    const timeout = setTimeout(() => {
+      if (settled) return;
+      settled = true;
+      disconnectSocket();
+      setError('Server is waking up — please tap Create again.');
+      setLoading(false);
+    }, 12000);
     socket.emit('room:create', name, (data: { code: string; room: RoomPublic; player: Player; token: string }) => {
+      if (settled) return;
+      settled = true;
+      clearTimeout(timeout);
       saveToken(data.token);
       store.setRoom(data.room);
       store.setMyPlayer(data.player);
@@ -80,7 +97,18 @@ export default function LandingPage() {
     saveName(name);
     store.reset();
     const socket = connectSocket();
+    let settled = false;
+    const timeout = setTimeout(() => {
+      if (settled) return;
+      settled = true;
+      disconnectSocket();
+      setError('Server is waking up — please tap Join again.');
+      setLoading(false);
+    }, 12000);
     socket.emit('room:join', { code: targetCode, playerName: name }, (err: string | null, data?: { room: RoomPublic; player: Player; token: string; question: QuestionPublic | null; roundNumber: number; timeLimit: number; timeRemaining: number }) => {
+      if (settled) return;
+      settled = true;
+      clearTimeout(timeout);
       if (err || !data) { setError(err || 'Failed to join'); setLoading(false); return; }
       saveToken(data.token);
       store.setRoom(data.room);
@@ -333,7 +361,7 @@ export default function LandingPage() {
             {[
               { step: '01', icon: '🎮', title: 'Create a room', body: 'Enter your name and spin up a private room. Share the link on WhatsApp — friends join in one tap, no account needed.' },
               { step: '02', icon: '🖼️', title: 'Guess the star', body: 'A photo drops. Type the Bollywood actor, Hindi movie, or South Indian star as fast as you can before the timer runs out.' },
-              { step: '03', icon: '🏆', title: 'Win the round', body: 'Faster answers score more. Stack streaks for bonus multipliers. The top scorer at the final whistle takes the crown.' },
+              { step: '03', icon: '🏆', title: 'Win the round', body: 'Be the fastest to guess right and bank 10 points — then 8, 6, 4 down the line. The top scorer at the final whistle takes the crown.' },
             ].map(f => (
               <div key={f.step} className="card-md flex flex-col p-6">
                 <div className="flex items-center justify-between">

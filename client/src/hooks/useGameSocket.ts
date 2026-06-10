@@ -44,7 +44,13 @@ export function useGameSocket() {
 
     // All handlers use getState() to avoid stale closure on captured store reference
     socket.on('room:updated', room => {
-      useGameStore.getState().setRoom(room);
+      const store = useGameStore.getState();
+      // Host restarted a finished match — drop the final scoreboard so everyone
+      // falls back into the lobby for the next game.
+      if (room.state === 'waiting' && store.finalScores) {
+        store.returnToLobby();
+      }
+      store.setRoom(room);
     });
 
     socket.on('game:round_start', ({ question, roundNumber, totalRounds, timeLimit }) => {

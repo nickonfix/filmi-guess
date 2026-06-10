@@ -15,6 +15,7 @@ import {
   updateSettings,
   kickPlayer,
   listPublicRooms,
+  resetRoomToLobby,
 } from './roomManager.js';
 import { startRound, handleAnswer, getQuestionPublic } from './gameEngine.js';
 import type { ServerToClientEvents, ClientToServerEvents } from './types.js';
@@ -147,6 +148,19 @@ io.on('connection', socket => {
     io.to(room.code).emit('room:updated', getRoomPublic(room));
     startRound(io, room);
     console.log(`[game:start] Room ${room.code} started`);
+  });
+
+  // Host wants another match after the game finished — bring the room back to the
+  // lobby so they can change the rules and start again with the same players.
+  socket.on('game:play_again', () => {
+    const room = getRoomByPlayerId(socket.id);
+    if (!room) return;
+    const player = room.players.get(socket.id);
+    if (!player?.isHost) return;
+    if (room.state !== 'finished') return;
+    resetRoomToLobby(room);
+    io.to(room.code).emit('room:updated', getRoomPublic(room));
+    console.log(`[game:play_again] Room ${room.code} returned to lobby`);
   });
 
   socket.on('game:answer', answer => {

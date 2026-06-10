@@ -85,6 +85,7 @@ export interface ClientToServerEvents {
   'room:rejoin': (data: { code: string; playerName: string; token: string }, callback: (err: string | null, data?: { room: RoomPublic; player: Player; token: string; question: QuestionPublic | null; roundNumber: number; timeLimit: number }) => void) => void;
   'room:watch': (data: { code: string }, callback: (err: string | null, data?: { room: RoomPublic; question: QuestionPublic | null; roundNumber: number; timeLimit: number }) => void) => void;
   'game:start': () => void;
+  'game:play_again': () => void;
   'game:answer': (answer: string) => void;
   'chat:send': (message: string) => void;
   'room:update_settings': (settings: Partial<RoomSettings>, callback?: (err: string | null) => void) => void;

@@ -1,5 +1,6 @@
 'use client';
-import { useRouter } from 'next/navigation';
+import { getSocket } from '@/lib/socket';
+import { leaveRoom } from '@/lib/leaveRoom';
 import type { PlayerScore } from '@/types';
 
 interface Props {
@@ -10,8 +11,19 @@ interface Props {
 const MEDALS = ['🥇', '🥈', '🥉'];
 
 export default function FinalLeaderboard({ scores, myId }: Props) {
-  const router = useRouter();
   const winner = scores[0];
+  const isHost = !!scores.find(s => s.id === myId)?.isHost;
+
+  // Host only — bounce the whole room back to the lobby to tweak the rules and replay.
+  function playAgain() {
+    getSocket().emit('game:play_again');
+  }
+
+  function share() {
+    const text = `I scored ${scores.find(s => s.id === myId)?.score || 0} points on FilmiGuess! Can you beat me? 🎬`;
+    navigator.share?.({ text, url: window.location.origin }) ??
+      navigator.clipboard.writeText(text);
+  }
 
   return (
     <div className="relative min-h-screen overflow-hidden">
@@ -61,20 +73,27 @@ export default function FinalLeaderboard({ scores, myId }: Props) {
             </div>
           </div>
 
-          <div className="flex gap-3">
-            <button onClick={() => router.push('/')} className="btn-primary flex-1">
-              Play again
-            </button>
-            <button
-              onClick={() => {
-                const text = `I scored ${scores.find(s => s.id === myId)?.score || 0} points on FilmiGuess! Can you beat me? 🎬`;
-                navigator.share?.({ text, url: window.location.origin }) ??
-                  navigator.clipboard.writeText(text);
-              }}
-              className="btn-secondary px-6"
-            >
-              Share
-            </button>
+          <div className="space-y-3">
+            {isHost ? (
+              <button onClick={playAgain} className="btn-primary w-full">
+                Play again — back to lobby
+              </button>
+            ) : (
+              <div className="card-soft py-3 text-center text-sm text-body">
+                Waiting for the host to start a new game…
+              </div>
+            )}
+            <div className="flex gap-3">
+              <button onClick={share} className="btn-secondary flex-1">
+                Share
+              </button>
+              <button
+                onClick={leaveRoom}
+                className="rounded-md px-6 py-2 text-sm font-medium text-error transition-colors hover:bg-error-soft"
+              >
+                Leave
+              </button>
+            </div>
           </div>
         </div>
       </div>
