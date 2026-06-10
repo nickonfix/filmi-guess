@@ -75,6 +75,77 @@
 }
 
 /* ------------------------------------------------------------------ */
+/* Legacy theme scope — the original neutral palette, used only on the  */
+/* in-game panel (the JKLM cream/teal stays everywhere else).           */
+/* ------------------------------------------------------------------ */
+.theme-legacy {
+  --ink: 23 23 23;
+  --body: 77 77 77;
+  --mute: 136 136 136;
+  --on-primary: 255 255 255;
+  --primary: 23 23 23;
+  --primary-lip: 23 23 23;
+  --band: 23 23 23;
+  --canvas: 255 255 255;
+  --canvas-soft: 250 250 250;
+  --canvas-soft-2: 245 245 245;
+  --hairline: 235 235 235;
+  --hairline-strong: 161 161 161;
+  --btn-lip-2: 222 222 222;
+  --link: 0 112 243;
+  --link-deep: 7 97 209;
+  --success-soft: 214 245 227;
+  --success-deep: 10 143 77;
+  --error-soft: 247 212 214;
+  --error-deep: 197 0 0;
+  --warning-soft: 255 239 207;
+  --warning-deep: 171 87 10;
+
+  --sh-hairline: inset 0 0 0 1px rgba(0, 0, 0, 0.07);
+  --sh-card: 0px 1px 1px rgba(0, 0, 0, 0.02), 0px 2px 2px rgba(0, 0, 0, 0.04), inset 0 0 0 1px rgba(0, 0, 0, 0.06);
+  --sh-card-md: 0px 2px 2px rgba(0, 0, 0, 0.04), 0px 8px 8px -8px rgba(0, 0, 0, 0.06), inset 0 0 0 1px rgba(0, 0, 0, 0.06);
+  --sh-card-lg: 0px 2px 2px rgba(0, 0, 0, 0.04), 0px 8px 16px -4px rgba(0, 0, 0, 0.08), inset 0 0 0 1px rgba(0, 0, 0, 0.06);
+  --sh-btn: inset 0 0 0 1px rgba(0, 0, 0, 0.06);
+  --sh-btn-primary: 0px 1px 2px rgba(0, 0, 0, 0.25);
+
+  background-color: rgb(var(--canvas-soft));
+}
+
+.dark .theme-legacy {
+  --ink: 237 237 237;
+  --body: 161 161 161;
+  --mute: 115 115 115;
+  --on-primary: 10 10 10;
+  --primary: 237 237 237;
+  --primary-lip: 237 237 237;
+  --band: 0 0 0;
+  --canvas: 23 23 23;
+  --canvas-soft: 10 10 10;
+  --canvas-soft-2: 31 31 31;
+  --hairline: 42 42 42;
+  --hairline-strong: 112 112 112;
+  --btn-lip-2: 42 42 42;
+  --link: 88 166 255;
+  --link-deep: 130 190 255;
+  --success-soft: 16 44 28;
+  --success-deep: 74 222 128;
+  --error-soft: 48 16 18;
+  --error-deep: 248 113 113;
+  --warning-soft: 48 36 12;
+  --warning-deep: 251 191 36;
+
+  --sh-hairline: inset 0 0 0 1px rgba(255, 255, 255, 0.08);
+  --sh-card: 0px 1px 2px rgba(0, 0, 0, 0.4), inset 0 0 0 1px rgba(255, 255, 255, 0.07);
+  --sh-card-md: 0px 2px 4px rgba(0, 0, 0, 0.5), 0px 8px 16px -8px rgba(0, 0, 0, 0.6), inset 0 0 0 1px rgba(255, 255, 255, 0.07);
+  --sh-card-lg: 0px 4px 8px rgba(0, 0, 0, 0.5), 0px 12px 24px -6px rgba(0, 0, 0, 0.6), inset 0 0 0 1px rgba(255, 255, 255, 0.08);
+}
+
+/* Restore the original multi-stop wordmark gradient inside the legacy panel. */
+.theme-legacy .text-gradient {
+  background-image: linear-gradient(90deg, #007cf0 0%, #00dfd8 25%, #7928ca 50%, #ff0080 75%, #f9cb28 100%);
+}
+
+/* ------------------------------------------------------------------ */
 /* Base                                                                */
 /* ------------------------------------------------------------------ */
 * {

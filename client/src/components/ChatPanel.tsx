@@ -1,22 +1,30 @@
 'use client';
-import { useEffect, useRef } from 'react';
+import { useEffect, useRef, useState } from 'react';
 import { useGameStore } from '@/store/gameStore';
+import { getSocket } from '@/lib/socket';
 import clsx from 'clsx';
 
 export default function ChatPanel() {
   const { chatMessages, myPlayer } = useGameStore();
   const listRef = useRef<HTMLDivElement>(null);
+  const [text, setText] = useState('');
 
   // Keep the chat pinned to the latest message by scrolling the list itself —
-  // never scrollIntoView, which would yank the whole page (and on mobile shoves
-  // the game board out of view).
+  // never scrollIntoView, which would yank the whole page.
   useEffect(() => {
     const el = listRef.current;
     if (el) el.scrollTop = el.scrollHeight;
   }, [chatMessages]);
 
+  function send() {
+    const trimmed = text.trim();
+    if (!trimmed) return;
+    getSocket().emit('chat:send', trimmed);
+    setText('');
+  }
+
   return (
-    <div className="card flex h-64 flex-col p-4">
+    <div className="card flex h-72 flex-col p-4">
       <h3 className="eyebrow mb-3 flex-shrink-0">Chat</h3>
       <div ref={listRef} className="flex-1 space-y-1 overflow-y-auto text-sm">
         {chatMessages.map((msg, i) => (
@@ -29,6 +37,20 @@ export default function ChatPanel() {
             </span>
           </div>
         ))}
+      </div>
+      <div className="mt-3 flex flex-shrink-0 gap-2">
+        <input
+          type="text"
+          value={text}
+          onChange={e => setText(e.target.value)}
+          onKeyDown={e => e.key === 'Enter' && send()}
+          maxLength={200}
+          placeholder="Say something…"
+          className="input-field flex-1"
+        />
+        <button onClick={send} className="btn-primary-sm flex-shrink-0 px-3" aria-label="Send message">
+          →
+        </button>
       </div>
     </div>
   );

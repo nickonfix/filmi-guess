@@ -167,16 +167,18 @@ io.on('connection', socket => {
     const room = getRoomByPlayerId(socket.id);
     if (!room || typeof answer !== 'string') return;
     const sanitized = answer.trim().slice(0, 100);
-    const correct = handleAnswer(io, room, socket.id, sanitized);
+    const winner = handleAnswer(io, room, socket.id, sanitized);
 
-    // Broadcast the attempt as a chat message (masked if wrong, shown if correct)
+    // Broadcast the attempt as a chat message. A wrong guess shows the text the
+    // player typed; a correct one hides it (so it doesn't spoil the answer) and
+    // instead reports how fast they got it.
     const player = room.players.get(socket.id);
     if (player) {
       io.to(room.code).emit('chat:message', {
         playerId: socket.id,
         playerName: player.name,
-        message: sanitized,
-        isCorrect: correct,
+        message: winner ? `guessed it in ${winner.timeTaken}s` : sanitized,
+        isCorrect: !!winner,
         timestamp: Date.now(),
       });
     }

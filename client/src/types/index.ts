@@ -62,6 +62,8 @@ export interface RoundWinner {
   answer: string;
   pointsEarned: number;
   position: number;
+  /** Seconds elapsed in the round when this player guessed correctly. */
+  timeTaken: number;
 }
 
 export interface PlayerScore {

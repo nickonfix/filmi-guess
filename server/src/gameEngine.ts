@@ -72,22 +72,26 @@ export function startRound(io: Server, room: Room): void {
   }, 1000);
 }
 
-export function handleAnswer(io: Server, room: Room, playerId: string, answer: string): boolean {
-  if (room.state !== 'playing' || !room.currentQuestion) return false;
+/** Returns the winning entry if the guess was correct (and counted), else null. */
+export function handleAnswer(io: Server, room: Room, playerId: string, answer: string): RoundWinner | null {
+  if (room.state !== 'playing' || !room.currentQuestion) return null;
 
   const alreadyAnswered = room.roundWinners.some(w => w.playerId === playerId);
-  if (alreadyAnswered) return false;
+  if (alreadyAnswered) return null;
 
   const correct = isCorrectAnswer(answer, room.currentQuestion.answer, room.currentQuestion.aliases);
-  if (!correct) return false;
+  if (!correct) return null;
 
   const player = room.players.get(playerId);
-  if (!player) return false;
+  if (!player) return null;
 
   player.streak++;
   const position = room.roundWinners.length + 1;
   const points = calcPoints(position);
   player.score += points;
+
+  const roundTime = room.settings.roundTime || DEFAULT_ROUND_TIME;
+  const timeTaken = Math.max(0, roundTime - room.timeRemaining);
 
   const winner: RoundWinner = {
     playerId,
@@ -95,6 +99,7 @@ export function handleAnswer(io: Server, room: Room, playerId: string, answer: s
     answer,
     pointsEarned: points,
     position,
+    timeTaken,
   };
   room.roundWinners.push(winner);
 
@@ -107,7 +112,7 @@ export function handleAnswer(io: Server, room: Room, playerId: string, answer: s
     endRound(io, room);
   }
 
-  return true;
+  return winner;
 }
 
 function endRound(io: Server, room: Room): void {
