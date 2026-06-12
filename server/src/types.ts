@@ -93,7 +93,19 @@ export interface ServerToClientEvents {
   'game:correct_answer': (winner: RoundWinner) => void;
   'game:round_end': (data: { answer: string; winners: RoundWinner[]; scores: PlayerScore[] }) => void;
   'game:finished': (scores: PlayerScore[]) => void;
+  'game:guess': (guess: PlayerGuess) => void;
   'chat:message': (msg: ChatMessage) => void;
+}
+
+/** A player's answer attempt, shown live under their name in the score list.
+ *  Correct guesses carry an empty `guess` so the answer is never broadcast. */
+export interface PlayerGuess {
+  playerId: string;
+  playerName: string;
+  guess: string;
+  isCorrect: boolean;
+  timeTaken?: number;
+  timestamp: number;
 }
 
 export interface ClientToServerEvents {

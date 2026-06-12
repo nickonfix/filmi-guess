@@ -91,6 +91,17 @@ export interface ChatMessage {
   timestamp: number;
 }
 
+/** A player's answer attempt, shown live under their name in the score list.
+ *  Correct guesses carry an empty `guess` so the answer is never broadcast. */
+export interface PlayerGuess {
+  playerId: string;
+  playerName: string;
+  guess: string;
+  isCorrect: boolean;
+  timeTaken?: number;
+  timestamp: number;
+}
+
 export interface GameState {
   room: RoomPublic | null;
   myPlayer: Player | null;
@@ -103,6 +114,8 @@ export interface GameState {
   lastRoundAnswer: string | null;
   finalScores: PlayerScore[] | null;
   chatMessages: ChatMessage[];
+  /** Latest answer attempt per player id for the current round. */
+  guesses: Record<string, PlayerGuess>;
   hasAnsweredThisRound: boolean;
   spectating: boolean;
 }

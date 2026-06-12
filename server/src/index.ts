@@ -177,16 +177,17 @@ io.on('connection', socket => {
     const sanitized = answer.trim().slice(0, 100);
     const winner = handleAnswer(io, room, socket.id, sanitized);
 
-    // Broadcast the attempt as a chat message. A wrong guess shows the text the
-    // player typed; a correct one hides it (so it doesn't spoil the answer) and
-    // instead reports how fast they got it.
+    // Broadcast the attempt so it shows under the player's name in the score
+    // list (not in chat — chat is for talking). A wrong guess carries the text
+    // the player typed; a correct one hides it so the answer isn't spoiled.
     const player = room.players.get(socket.id);
     if (player) {
-      io.to(room.code).emit('chat:message', {
+      io.to(room.code).emit('game:guess', {
         playerId: socket.id,
         playerName: player.name,
-        message: winner ? `guessed it in ${winner.timeTaken}s` : sanitized,
+        guess: winner ? '' : sanitized,
         isCorrect: !!winner,
+        timeTaken: winner?.timeTaken,
         timestamp: Date.now(),
       });
     }

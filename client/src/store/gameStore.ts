@@ -1,6 +1,6 @@
 'use client';
 import { create } from 'zustand';
-import type { GameState, RoomPublic, Player, QuestionPublic, RoundWinner, PlayerScore, ChatMessage } from '@/types';
+import type { GameState, RoomPublic, Player, QuestionPublic, RoundWinner, PlayerScore, ChatMessage, PlayerGuess } from '@/types';
 
 interface GameStore extends GameState {
   setRoom: (room: RoomPublic) => void;
@@ -11,6 +11,7 @@ interface GameStore extends GameState {
   setRoundEnd: (answer: string, winners: RoundWinner[], scores: PlayerScore[]) => void;
   setFinished: (scores: PlayerScore[]) => void;
   addChat: (msg: ChatMessage) => void;
+  setGuess: (g: PlayerGuess) => void;
   markAnswered: () => void;
   setSpectating: (v: boolean) => void;
   returnToLobby: () => void;
@@ -29,6 +30,7 @@ const initialState: GameState = {
   lastRoundAnswer: null,
   finalScores: null,
   chatMessages: [],
+  guesses: {},
   hasAnsweredThisRound: false,
   spectating: false,
 };
@@ -47,6 +49,7 @@ export const useGameStore = create<GameStore>(set => ({
       timeLimit,
       roundWinners: [],
       lastRoundAnswer: null,
+      guesses: {},
       hasAnsweredThisRound: false,
       room: state.room ? { ...state.room, state: 'playing' as const } : null,
     })),
@@ -72,6 +75,11 @@ export const useGameStore = create<GameStore>(set => ({
       chatMessages: [...state.chatMessages.slice(-100), msg],
     })),
 
+  setGuess: g =>
+    set(state => ({
+      guesses: { ...state.guesses, [g.playerId]: g },
+    })),
+
   markAnswered: () => set({ hasAnsweredThisRound: true }),
 
   setSpectating: (spectating) => set({ spectating }),
@@ -85,6 +93,7 @@ export const useGameStore = create<GameStore>(set => ({
       roundNumber: 0,
       roundWinners: [],
       lastRoundAnswer: null,
+      guesses: {},
       hasAnsweredThisRound: false,
       myPlayer: state.myPlayer ? { ...state.myPlayer, score: 0, streak: 0 } : null,
     })),

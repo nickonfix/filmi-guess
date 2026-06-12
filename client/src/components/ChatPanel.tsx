@@ -32,9 +32,7 @@ export default function ChatPanel() {
             <span className={clsx('font-medium', msg.playerId === myPlayer?.id ? 'text-link' : 'text-ink')}>
               {msg.playerName}:
             </span>{' '}
-            <span className={clsx(msg.isCorrect ? 'font-medium text-success-deep' : 'text-body')}>
-              {msg.isCorrect ? `✓ ${msg.message}` : msg.message}
-            </span>
+            <span className="text-body">{msg.message}</span>
           </div>
         ))}
       </div>

@@ -83,6 +83,10 @@ export function useGameSocket() {
       useGameStore.getState().addChat(msg);
     });
 
+    socket.on('game:guess', guess => {
+      useGameStore.getState().setGuess(guess);
+    });
+
     socket.on('room:kicked', () => {
       useGameStore.getState().reset();
       if (typeof window !== 'undefined') {
@@ -99,6 +103,7 @@ export function useGameSocket() {
       socket.off('game:round_end');
       socket.off('game:finished');
       socket.off('chat:message');
+      socket.off('game:guess');
       socket.off('room:kicked');
     };
   }, []);
