@@ -65,6 +65,8 @@ export interface RoomSettings {
   categories: Category[];
   roundTime: number;
   isPublic: boolean;
+  /** Question difficulty for the match — 'mixed' draws from all levels. */
+  difficulty: Difficulty | 'mixed';
 }
 
 export interface PublicRoomSummary {

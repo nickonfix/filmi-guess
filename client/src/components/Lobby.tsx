@@ -4,7 +4,7 @@ import { getSocket } from '@/lib/socket';
 import { leaveRoom } from '@/lib/leaveRoom';
 import { useGameStore } from '@/store/gameStore';
 import { getSavedName, getSavedToken, saveToken } from '@/lib/playerName';
-import { CATEGORY_META } from '@/types';
+import { CATEGORY_META, DIFFICULTY_META } from '@/types';
 import ThemeToggle from './ThemeToggle';
 import clsx from 'clsx';
 import type { RoomPublic, Player, QuestionPublic, Category, RoomSettings } from '@/types';
@@ -181,6 +181,10 @@ export default function Lobby({ room, myPlayer }: Props) {
             <div className="flex flex-wrap gap-2">
               <span className="badge">{settings.totalRounds} rounds</span>
               <span className="badge">{settings.roundTime}s / round</span>
+              <span className="badge">
+                {DIFFICULTY_META.find(d => d.id === (settings.difficulty ?? 'mixed'))?.icon}{' '}
+                {DIFFICULTY_META.find(d => d.id === (settings.difficulty ?? 'mixed'))?.label}
+              </span>
               {settings.categories.map(c => {
                 const m = CATEGORY_META.find(x => x.id === c);
                 return <span key={c} className="badge">{m?.icon} {m?.label ?? c}</span>;
@@ -302,6 +306,30 @@ export default function Lobby({ room, myPlayer }: Props) {
                     );
                   })}
                 </div>
+              </div>
+
+              {/* Difficulty */}
+              <div>
+                <p className="mb-2 text-sm text-body">Difficulty</p>
+                <div className="flex flex-wrap gap-2">
+                  {DIFFICULTY_META.map(d => {
+                    const active = (settings.difficulty ?? 'mixed') === d.id;
+                    return (
+                      <button
+                        key={d.id}
+                        onClick={() => updateSettings({ difficulty: d.id })}
+                        className={`rounded-sm px-3 py-1.5 text-sm font-medium transition-all ${
+                          active
+                            ? 'bg-ink text-on-primary'
+                            : 'bg-canvas text-body shadow-hairline hover:bg-canvas-soft'
+                        }`}
+                      >
+                        {d.icon} {d.label}
+                      </button>
+                    );
+                  })}
+                </div>
+                <p className="mt-2 text-xs text-mute">Mixed pulls questions from every level.</p>
               </div>
 
               {/* Public / Private */}

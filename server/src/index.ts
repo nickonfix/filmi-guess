@@ -19,6 +19,9 @@ import {
 } from './roomManager.js';
 import { startRound, handleAnswer, getQuestionPublic } from './gameEngine.js';
 import { serveImage } from './imageProxy.js';
+import { initQuestionStore } from './questionStore.js';
+
+initQuestionStore();
 import type { ServerToClientEvents, ClientToServerEvents } from './types.js';
 
 const app = express();

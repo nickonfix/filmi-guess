@@ -1,6 +1,6 @@
 import { randomUUID } from 'node:crypto';
 import type { Room, Player, RoomSettings, Category, PublicRoomSummary } from './types.js';
-import { getQuestionsByCategories } from './questions.js';
+import { getQuestions } from './questionStore.js';
 
 const rooms = new Map<string, Room>();
 
@@ -20,6 +20,7 @@ export function createRoom(hostId: string, hostName: string): { room: Room; toke
     categories: ['bollywood_actor', 'hindi_movie', 'south_actor', 'classic_movie'],
     roundTime: 25,
     isPublic: false,
+    difficulty: 'mixed',
   };
 
   const host: Player = {
@@ -132,8 +133,9 @@ export function rejoinRoom(code: string, playerName: string, token: string, newS
 }
 
 export function startGame(room: Room): void {
-  room.questions = getQuestionsByCategories(
+  room.questions = getQuestions(
     room.settings.categories,
+    room.settings.difficulty,
     room.settings.totalRounds
   );
   room.currentQuestionIndex = 0;
@@ -178,6 +180,9 @@ export function updateSettings(room: Room, partial: Partial<RoomSettings>): Room
   }
   if (typeof partial.isPublic === 'boolean') {
     s.isPublic = partial.isPublic;
+  }
+  if (typeof partial.difficulty === 'string' && ['easy', 'medium', 'hard', 'mixed'].includes(partial.difficulty)) {
+    s.difficulty = partial.difficulty;
   }
   if (Array.isArray(partial.categories)) {
     const valid = partial.categories.filter((c): c is Category => VALID_CATEGORIES.includes(c as Category));

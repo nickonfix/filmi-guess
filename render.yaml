@@ -17,3 +17,9 @@ services:
     envVars:
       - key: NODE_VERSION
         value: "20"
+      # Supabase question bank — set the values in the Render dashboard.
+      # Optional: without them the server falls back to the bundled bank.
+      - key: SUPABASE_URL
+        sync: false
+      - key: SUPABASE_SERVICE_ROLE_KEY
+        sync: false

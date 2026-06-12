@@ -25,7 +25,16 @@ export interface RoomSettings {
   categories: Category[];
   roundTime: number;
   isPublic: boolean;
+  /** Question difficulty for the match — 'mixed' draws from all levels. */
+  difficulty: Difficulty | 'mixed';
 }
+
+export const DIFFICULTY_META: { id: Difficulty | 'mixed'; label: string; icon: string }[] = [
+  { id: 'mixed', label: 'Mixed', icon: '🎲' },
+  { id: 'easy', label: 'Easy', icon: '🌱' },
+  { id: 'medium', label: 'Medium', icon: '🔥' },
+  { id: 'hard', label: 'Hard', icon: '💀' },
+];
 
 export interface PublicRoomSummary {
   code: string;
