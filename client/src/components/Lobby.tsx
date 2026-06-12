@@ -148,7 +148,7 @@ export default function Lobby({ room, myPlayer }: Props) {
                     p.id === myPlayer?.id ? 'bg-canvas-soft shadow-hairline' : ''
                   }`}
                 >
-                  <div className="flex h-8 w-8 items-center justify-center rounded-full bg-gradient-to-br from-g-develop-start to-g-preview-end text-sm font-semibold text-white">
+                  <div className="flex h-8 w-8 items-center justify-center rounded-full bg-gradient-to-br from-ink to-hairline-strong text-sm font-semibold text-on-primary">
                     {p.name[0].toUpperCase()}
                   </div>
                   <span className="font-medium text-ink">{p.name}</span>

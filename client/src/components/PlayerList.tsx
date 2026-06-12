@@ -19,10 +19,10 @@ export default function PlayerList() {
             } ${p.id === myPlayer?.id ? 'bg-canvas-soft shadow-hairline' : ''}`}
           >
             <span className="w-5 text-right font-mono text-xs text-mute">{i + 1}</span>
-            <div className={`flex h-6 w-6 flex-shrink-0 items-center justify-center rounded-full text-xs font-semibold text-white ${
+            <div className={`flex h-6 w-6 flex-shrink-0 items-center justify-center rounded-full text-xs font-semibold ${
               p.disconnected
-                ? 'bg-hairline-strong'
-                : 'bg-gradient-to-br from-g-develop-start to-g-preview-end'
+                ? 'bg-hairline-strong text-canvas'
+                : 'bg-gradient-to-br from-ink to-hairline-strong text-on-primary'
             }`}>
               {p.name[0].toUpperCase()}
             </div>

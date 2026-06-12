@@ -42,7 +42,7 @@ export default function FinalLeaderboard({ scores, myId }: Props) {
               <div className="relative">
                 <div className="text-6xl">🏆</div>
                 <p className="eyebrow mt-3 text-white/50">Winner</p>
-                <h2 className="display-lg mt-1 text-gradient">{winner.name}</h2>
+                <h2 className="display-lg mt-1 text-gradient-band text-gradient-animate">{winner.name}</h2>
                 <p className="mt-2 font-mono text-lg text-white/70">
                   {winner.score} <span className="text-sm text-white/40">points</span>
                 </p>
@@ -62,7 +62,7 @@ export default function FinalLeaderboard({ scores, myId }: Props) {
                   }`}
                 >
                   <span className="w-7 text-center text-lg">{MEDALS[i] || <span className="font-mono text-sm text-mute">{i + 1}</span>}</span>
-                  <div className="flex h-8 w-8 items-center justify-center rounded-full bg-gradient-to-br from-g-develop-start to-g-preview-end text-sm font-semibold text-white">
+                  <div className="flex h-8 w-8 items-center justify-center rounded-full bg-gradient-to-br from-ink to-hairline-strong text-sm font-semibold text-on-primary">
                     {p.name[0].toUpperCase()}
                   </div>
                   <span className="flex-1 font-medium text-ink">{p.name}</span>

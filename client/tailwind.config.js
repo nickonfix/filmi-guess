@@ -19,21 +19,10 @@ module.exports = {
         hairline: 'rgb(var(--hairline) / <alpha-value>)',
         'hairline-strong': 'rgb(var(--hairline-strong) / <alpha-value>)',
 
-        // Fixed brand gradient stops
-        cyan: '#50e3c2',
-        violet: '#7928ca',
-        'highlight-pink': '#ff0080',
-        'g-develop-start': '#007cf0',
-        'g-develop-end': '#00dfd8',
-        'g-preview-start': '#7928ca',
-        'g-preview-end': '#ff0080',
-        'g-ship-start': '#ff4d4d',
-        'g-ship-end': '#f9cb28',
 
         // Semantic (flip on .dark)
         link: 'rgb(var(--link) / <alpha-value>)',
         'link-deep': 'rgb(var(--link-deep) / <alpha-value>)',
-        'link-soft': '#d3e5ff',
         success: '#0cce6b',
         'success-soft': 'rgb(var(--success-soft) / <alpha-value>)',
         'success-deep': 'rgb(var(--success-deep) / <alpha-value>)',
@@ -70,7 +59,7 @@ module.exports = {
         // Always-dark spotlight surfaces (bands, winner card, overlays)
         'card-dark':
           '0px 2px 2px rgba(0,0,0,0.3), 0px 8px 16px -4px rgba(0,0,0,0.4), inset 0 0 0 1px rgba(255,255,255,0.08)',
-        focus: '0 0 0 3px rgba(0,112,243,0.3)',
+        focus: '0 0 0 1px rgb(var(--hairline-strong)), 0 0 0 4px rgba(var(--ink), 0.12)',
       },
       animation: {
         'pulse-fast': 'pulse 0.8s cubic-bezier(0.4, 0, 0.6, 1) infinite',

@@ -150,7 +150,7 @@ export default function GameBoard() {
                   <div className="absolute inset-0 z-10 flex flex-col items-center justify-center gap-4 bg-black/90 px-4 backdrop-blur-sm">
                     <div className="text-center">
                       <p className="eyebrow mb-1 text-white/50">The answer was</p>
-                      <p className="display-md leading-tight text-gradient">{lastRoundAnswer}</p>
+                      <p className="display-md leading-tight text-gradient-band text-gradient-animate">{lastRoundAnswer}</p>
                     </div>
 
                     <div className="h-px w-12 bg-white/15" />
