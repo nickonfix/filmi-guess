@@ -19,7 +19,7 @@ import {
 } from './roomManager.js';
 import { startRound, handleAnswer, getQuestionPublic } from './gameEngine.js';
 import { serveImage } from './imageProxy.js';
-import { initQuestionStore } from './questionStore.js';
+import { initQuestionStore, getQuestionStoreStatus } from './questionStore.js';
 
 initQuestionStore();
 import type { ServerToClientEvents, ClientToServerEvents } from './types.js';
@@ -34,7 +34,7 @@ const io = new Server<ClientToServerEvents, ServerToClientEvents>(httpServer, {
   cors: { origin: true, methods: ['GET', 'POST'] },
 });
 
-app.get('/health', (_req, res) => res.json({ status: 'ok' }));
+app.get('/health', (_req, res) => res.json({ status: 'ok', questions: getQuestionStoreStatus() }));
 
 // Round images are served through this proxy with opaque tokens so the
 // answer-revealing source URLs never reach the client.

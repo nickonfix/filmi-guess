@@ -13,6 +13,12 @@ const REFRESH_INTERVAL_MS = 10 * 60 * 1000;
 
 let cache: Question[] = questionBank;
 let supabase: SupabaseClient | null = null;
+let source: 'bundled' | 'supabase' = 'bundled';
+
+/** Where questions are currently served from, for health reporting. */
+export function getQuestionStoreStatus(): { source: string; count: number; supabaseConfigured: boolean } {
+  return { source, count: cache.length, supabaseConfigured: supabase !== null };
+}
 
 interface QuestionRow {
   id: string;
@@ -50,6 +56,7 @@ export async function refreshQuestions(): Promise<void> {
     if (error) throw error;
     if (data && data.length > 0) {
       cache = (data as QuestionRow[]).map(rowToQuestion);
+      source = 'supabase';
       console.log(`[questions] loaded ${cache.length} questions from Supabase`);
     } else {
       console.warn('[questions] Supabase returned no questions — keeping current set');
