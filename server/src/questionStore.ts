@@ -1,4 +1,3 @@
-import { createClient, type SupabaseClient } from '@supabase/supabase-js';
 import { questionBank } from './questionBank.js';
 import type { Question, Category, Difficulty, ImageCrop } from './types.js';
 
@@ -7,17 +6,21 @@ import type { Question, Category, Difficulty, ImageCrop } from './types.js';
  * bundled bank as a fallback so the game always works (cold start, DB outage,
  * or simply no credentials set yet). Questions are cached in memory and
  * refreshed periodically — game rounds never wait on the database.
+ *
+ * Talks to Supabase's PostgREST endpoint with plain fetch — the supabase-js
+ * SDK pulls in a realtime/WebSocket stack that crashes on Node 20 and isn't
+ * needed for a simple read.
  */
 
 const REFRESH_INTERVAL_MS = 10 * 60 * 1000;
 
 let cache: Question[] = questionBank;
-let supabase: SupabaseClient | null = null;
+let config: { url: string; key: string } | null = null;
 let source: 'bundled' | 'supabase' = 'bundled';
 
 /** Where questions are currently served from, for health reporting. */
 export function getQuestionStoreStatus(): { source: string; count: number; supabaseConfigured: boolean } {
-  return { source, count: cache.length, supabaseConfigured: supabase !== null };
+  return { source, count: cache.length, supabaseConfigured: config !== null };
 }
 
 interface QuestionRow {
@@ -47,15 +50,17 @@ function rowToQuestion(row: QuestionRow): Question {
 }
 
 export async function refreshQuestions(): Promise<void> {
-  if (!supabase) return;
+  if (!config) return;
   try {
-    const { data, error } = await supabase
-      .from('questions')
-      .select('id, image_url, answer, aliases, category, difficulty, hint, submitted_by, crop')
-      .eq('active', true);
-    if (error) throw error;
-    if (data && data.length > 0) {
-      cache = (data as QuestionRow[]).map(rowToQuestion);
+    const select = 'id,image_url,answer,aliases,category,difficulty,hint,submitted_by,crop';
+    const res = await fetch(
+      `${config.url}/rest/v1/questions?select=${select}&active=eq.true`,
+      { headers: { apikey: config.key, Authorization: `Bearer ${config.key}` } },
+    );
+    if (!res.ok) throw new Error(`PostgREST ${res.status}: ${await res.text()}`);
+    const data = (await res.json()) as QuestionRow[];
+    if (data.length > 0) {
+      cache = data.map(rowToQuestion);
       source = 'supabase';
       console.log(`[questions] loaded ${cache.length} questions from Supabase`);
     } else {
@@ -73,7 +78,7 @@ export function initQuestionStore(): void {
     console.log(`[questions] Supabase not configured — using bundled bank (${questionBank.length} questions)`);
     return;
   }
-  supabase = createClient(url, key, { auth: { persistSession: false } });
+  config = { url: url.replace(/\/$/, ''), key };
   void refreshQuestions();
   setInterval(() => void refreshQuestions(), REFRESH_INTERVAL_MS).unref();
 }
