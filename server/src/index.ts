@@ -193,6 +193,15 @@ io.on('connection', socket => {
     }
   });
 
+  // Player asks to see the hint — mark them so their winnings get docked.
+  socket.on('game:hint', callback => {
+    if (typeof callback !== 'function') return;
+    const room = getRoomByPlayerId(socket.id);
+    if (!room || room.state !== 'playing' || !room.currentQuestion) return;
+    room.hintUsers.add(socket.id);
+    callback(room.currentQuestion.hint);
+  });
+
   socket.on('chat:send', message => {
     const room = getRoomByPlayerId(socket.id);
     const player = room?.players.get(socket.id);

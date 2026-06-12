@@ -18,7 +18,6 @@ export function getQuestionPublic(room: Room): QuestionPublic | null {
     imageUrl: `/img/${room.currentImageToken}`,
     category: room.currentQuestion.category,
     difficulty: room.currentQuestion.difficulty,
-    hint: room.currentQuestion.hint,
     submittedBy: room.currentQuestion.submittedBy,
   };
 }
@@ -38,6 +37,9 @@ function getScores(room: Room) {
 // it right still banks at least one point. Deterministic — no time/streak bonus.
 const POINTS_BY_POSITION = [10, 8, 6, 4, 2];
 
+/** Points docked from a round's winnings when the player revealed the hint. */
+export const HINT_COST = 3;
+
 function calcPoints(position: number): number {
   return POINTS_BY_POSITION[position - 1] ?? 1;
 }
@@ -51,6 +53,7 @@ export function startRound(io: Server, room: Room): void {
   const roundTime = room.settings.roundTime || DEFAULT_ROUND_TIME;
   room.currentQuestion = room.questions[room.currentQuestionIndex];
   room.currentImageToken = registerRoundImage(room.currentQuestion);
+  room.hintUsers = new Set();
   room.roundWinners = [];
   room.state = 'playing';
   room.timeRemaining = roundTime;
@@ -93,7 +96,9 @@ export function handleAnswer(io: Server, room: Room, playerId: string, answer: s
 
   player.streak++;
   const position = room.roundWinners.length + 1;
-  const points = calcPoints(position);
+  const base = calcPoints(position);
+  // Revealing the hint docks points but a correct guess always banks at least 1.
+  const points = room.hintUsers.has(playerId) ? Math.max(1, base - HINT_COST) : base;
   player.score += points;
 
   const roundTime = room.settings.roundTime || DEFAULT_ROUND_TIME;

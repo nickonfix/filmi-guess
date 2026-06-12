@@ -9,6 +9,7 @@ import PlayerList from './PlayerList';
 import ChatPanel from './ChatPanel';
 import ThemeToggle from './ThemeToggle';
 import clsx from 'clsx';
+import { HINT_COST } from '@/types';
 import type { Player, QuestionPublic, RoomPublic } from '@/types';
 
 const CATEGORY_LABELS: Record<string, string> = {
@@ -58,6 +59,53 @@ function JoinGameBanner() {
       <p className="text-sm text-body">Watching as <span className="font-semibold text-ink">{savedName || '…'}</span></p>
       <button onClick={joinGame} className="btn-primary-sm flex-shrink-0">Join game</button>
     </div>
+  );
+}
+
+/** Click-to-reveal hint. Revealing tells the server, which docks HINT_COST
+ *  points from whatever this player earns if they guess right this round. */
+function HintCard({ questionId, answered }: { questionId: string; answered: boolean }) {
+  const [hint, setHint] = useState<string | null>(null);
+  const [loading, setLoading] = useState(false);
+
+  // New round → hide the hint again
+  useEffect(() => {
+    setHint(null);
+    setLoading(false);
+  }, [questionId]);
+
+  function reveal() {
+    if (loading || hint) return;
+    setLoading(true);
+    getSocket().emit('game:hint', (text: string) => {
+      setHint(text);
+      setLoading(false);
+    });
+  }
+
+  if (hint) {
+    return (
+      <div className="card flex items-start gap-2 px-4 py-3 animate-slide-up">
+        <span className="text-warning">💡</span>
+        <p className="flex-1 text-sm text-body">{hint}</p>
+        {!answered && <span className="badge flex-shrink-0 text-warning-deep">−{HINT_COST} pts</span>}
+      </div>
+    );
+  }
+
+  return (
+    <button
+      onClick={reveal}
+      disabled={loading}
+      className="card group flex w-full items-center justify-between px-4 py-3 text-left transition-all hover:shadow-card-md disabled:opacity-60"
+    >
+      <span className="flex items-center gap-2 text-sm font-medium text-ink">
+        <span>💡</span> {loading ? 'Revealing…' : 'Show hint'}
+      </span>
+      <span className="text-xs text-mute">
+        {answered ? 'free — you already guessed it' : `costs ${HINT_COST} points off this round's win`}
+      </span>
+    </button>
   );
 }
 
@@ -209,12 +257,9 @@ export default function GameBoard() {
             )}
           </div>
 
-          {/* Hint */}
-          {currentQuestion && !isBetweenRounds && (
-            <div className="card flex items-start gap-2 px-4 py-3">
-              <span className="text-warning">💡</span>
-              <p className="text-sm text-body">{currentQuestion.hint}</p>
-            </div>
+          {/* Hint — hidden until the player chooses to pay for it */}
+          {currentQuestion && !isBetweenRounds && !spectating && (
+            <HintCard questionId={currentQuestion.id} answered={hasAnsweredThisRound} />
           )}
 
           {/* Answer input — hidden for spectators */}

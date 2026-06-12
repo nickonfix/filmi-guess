@@ -61,9 +61,11 @@ export interface QuestionPublic {
   imageUrl: string;
   category: Category;
   difficulty: Difficulty;
-  hint: string;
   submittedBy: string;
 }
+
+/** Points docked from a round's winnings when the player reveals the hint. */
+export const HINT_COST = 3;
 
 export interface RoundWinner {
   playerId: string;

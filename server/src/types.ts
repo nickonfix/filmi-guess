@@ -58,6 +58,8 @@ export interface Room {
   /** Opaque token for the current round's proxied image (never expose the source URL —
    *  Wikipedia filenames contain the answer). */
   currentImageToken: string | null;
+  /** Players who revealed the hint this round — their winnings are docked. */
+  hintUsers: Set<string>;
 }
 
 export interface RoomSettings {
@@ -116,18 +118,20 @@ export interface ClientToServerEvents {
   'game:start': () => void;
   'game:play_again': () => void;
   'game:answer': (answer: string) => void;
+  'game:hint': (callback: (hint: string) => void) => void;
   'chat:send': (message: string) => void;
   'room:update_settings': (settings: Partial<RoomSettings>, callback?: (err: string | null) => void) => void;
   'room:kick': (playerId: string) => void;
   'rooms:list': (callback: (rooms: PublicRoomSummary[]) => void) => void;
 }
 
+// The hint is deliberately NOT part of the public question payload — it's
+// only handed out via the `game:hint` request so the server can dock points.
 export interface QuestionPublic {
   id: string;
   imageUrl: string;
   category: Category;
   difficulty: Difficulty;
-  hint: string;
   submittedBy: string;
 }
 
