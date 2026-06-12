@@ -7,7 +7,7 @@ let socket: Socket | null = null;
 // Must match the service `name` in render.yaml -> https://<name>.onrender.com
 const PROD_SERVER_URL = 'https://filmi-guess-server.onrender.com';
 
-function getServerUrl(): string {
+export function getServerUrl(): string {
   if (process.env.NEXT_PUBLIC_SERVER_URL) return process.env.NEXT_PUBLIC_SERVER_URL;
   if (typeof window !== 'undefined') {
     const host = window.location.hostname;

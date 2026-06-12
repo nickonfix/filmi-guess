@@ -44,6 +44,7 @@ export function createRoom(hostId: string, hostName: string): { room: Room; toke
     roundWinners: [],
     settings,
     playerTokens: new Map([[hostName.toLowerCase(), token]]),
+    currentImageToken: null,
   };
 
   rooms.set(code, room);
@@ -149,6 +150,7 @@ export function resetRoomToLobby(room: Room): void {
   if (room.timer) { clearInterval(room.timer); room.timer = null; }
   room.state = 'waiting';
   room.currentQuestion = null;
+  room.currentImageToken = null;
   room.currentQuestionIndex = 0;
   room.questions = [];
   room.roundWinners = [];

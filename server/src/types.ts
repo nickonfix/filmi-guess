@@ -11,6 +11,15 @@ export interface Player {
   disconnected?: boolean;
 }
 
+/** Percentages (0–100) of the original image to KEEP. Used to cut the
+ *  printed title off movie posters so the answer isn't visible on screen. */
+export interface ImageCrop {
+  top?: number;
+  bottom?: number;
+  left?: number;
+  right?: number;
+}
+
 export interface Question {
   id: string;
   imageUrl: string;
@@ -20,6 +29,7 @@ export interface Question {
   difficulty: Difficulty;
   hint: string;
   submittedBy: string;
+  crop?: ImageCrop;
 }
 
 export interface RoundWinner {
@@ -45,6 +55,9 @@ export interface Room {
   settings: RoomSettings;
   /** Lowercase player name -> session token, required to reattach to that player via room:rejoin */
   playerTokens: Map<string, string>;
+  /** Opaque token for the current round's proxied image (never expose the source URL —
+   *  Wikipedia filenames contain the answer). */
+  currentImageToken: string | null;
 }
 
 export interface RoomSettings {

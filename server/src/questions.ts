@@ -106,6 +106,7 @@ export const questions: Question[] = [
   // ── HINDI MOVIES ──────────────────────────────────────────────────────────
   {
     id: 'q11',
+    crop: { bottom: 56 },  // cut the printed title out of the poster
     imageUrl: 'https://upload.wikimedia.org/wikipedia/en/8/80/Dilwale_Dulhania_Le_Jayenge_poster.jpg',
     answer: 'Dilwale Dulhania Le Jayenge',
     aliases: ['ddlj', 'dilwale dulhaniya', 'dilwale dulhania'],
@@ -116,6 +117,7 @@ export const questions: Question[] = [
   },
   {
     id: 'q12',
+    crop: { bottom: 38 },  // cut the printed title out of the poster
     imageUrl: 'https://upload.wikimedia.org/wikipedia/en/5/52/Sholay-poster.jpg',
     answer: 'Sholay',
     aliases: ['shola', 'sholaay'],
@@ -126,6 +128,7 @@ export const questions: Question[] = [
   },
   {
     id: 'q13',
+    crop: { top: 30, bottom: 92 },  // cut the printed title out of the poster
     imageUrl: 'https://upload.wikimedia.org/wikipedia/en/thumb/d/df/3_idiots_poster.jpg/500px-3_idiots_poster.jpg',
     answer: '3 Idiots',
     aliases: ['three idiots', 'tin idiots'],
@@ -136,6 +139,7 @@ export const questions: Question[] = [
   },
   {
     id: 'q14',
+    crop: { top: 4, bottom: 63 },  // cut the printed title out of the poster
     imageUrl: 'https://upload.wikimedia.org/wikipedia/en/thumb/9/99/Dangal_Poster.jpg/500px-Dangal_Poster.jpg',
     answer: 'Dangal',
     aliases: ['dangal movie'],
@@ -146,6 +150,7 @@ export const questions: Question[] = [
   },
   {
     id: 'q15',
+    crop: { bottom: 44 },  // cut the printed title out of the poster
     imageUrl: 'https://upload.wikimedia.org/wikipedia/en/c/cc/K.G.F_Chapter_1_poster.jpg',
     answer: 'KGF',
     aliases: ['kgf chapter 1', 'kolar gold fields', 'kgf 1'],
@@ -230,6 +235,7 @@ export const questions: Question[] = [
   // ── CLASSIC MOVIES ────────────────────────────────────────────────────────
   {
     id: 'q23',
+    crop: { top: 23, bottom: 80 },  // cut the printed title out of the poster
     imageUrl: 'https://upload.wikimedia.org/wikipedia/en/thumb/1/16/Mughal-e-Azam.jpg/500px-Mughal-e-Azam.jpg',
     answer: 'Mughal-E-Azam',
     aliases: ['mughal e azam', 'mughal e alam', 'mughle azam'],
@@ -240,6 +246,7 @@ export const questions: Question[] = [
   },
   {
     id: 'q24',
+    crop: { top: 53, bottom: 94 },  // cut the printed title out of the poster
     imageUrl: 'https://upload.wikimedia.org/wikipedia/en/c/c7/Deewaar_poster.jpg',
     answer: 'Deewar',
     aliases: ['deewar 1975', 'deewaar'],
@@ -250,6 +257,7 @@ export const questions: Question[] = [
   },
   {
     id: 'q25',
+    crop: { bottom: 70 },  // cut the printed title out of the poster
     imageUrl: 'https://upload.wikimedia.org/wikipedia/en/5/5f/Baahubali_The_Beginning_poster.jpg',
     answer: 'Baahubali',
     aliases: ['bahubali', 'baahubali the beginning', 'bahubali 1'],
@@ -260,6 +268,7 @@ export const questions: Question[] = [
   },
   {
     id: 'q26',
+    crop: { bottom: 60 },  // cut the printed title out of the poster
     imageUrl: 'https://upload.wikimedia.org/wikipedia/en/thumb/d/d7/RRR_Poster.jpg/500px-RRR_Poster.jpg',
     answer: 'RRR',
     aliases: ['rrr movie', 'rise roar revolt', 'roudram ranam rudhiram'],
@@ -270,6 +279,7 @@ export const questions: Question[] = [
   },
   {
     id: 'q27',
+    crop: { bottom: 64 },  // cut the printed title out of the poster
     imageUrl: 'https://upload.wikimedia.org/wikipedia/en/4/4d/Kabhi_Khushi_Kabhie_Gham..._poster.jpg',
     answer: 'Kabhi Khushi Kabhie Gham',
     aliases: ['k3g', 'kabhi khushi kabhi gham', 'k 3 g'],
@@ -280,6 +290,7 @@ export const questions: Question[] = [
   },
   {
     id: 'q28',
+    crop: { top: 26 },  // cut the printed title out of the poster
     imageUrl: 'https://upload.wikimedia.org/wikipedia/en/1/17/Zindagi_Na_Milegi_Dobara.jpg',
     answer: 'Zindagi Na Milegi Dobara',
     aliases: ['znmd', 'zindagi na milegi dobara'],
@@ -290,6 +301,7 @@ export const questions: Question[] = [
   },
   {
     id: 'q29',
+    crop: { bottom: 68 },  // cut the printed title out of the poster
     imageUrl: 'https://upload.wikimedia.org/wikipedia/en/b/b6/Lagaan.jpg',
     answer: 'Lagaan',
     aliases: ['lagaan 2001', 'once upon a time in india'],
@@ -300,6 +312,7 @@ export const questions: Question[] = [
   },
   {
     id: 'q30',
+    crop: { top: 20, bottom: 72 },  // cut the printed title out of the poster
     imageUrl: 'https://upload.wikimedia.org/wikipedia/en/d/db/Dil_Chahta_Hai.jpg',
     answer: 'Dil Chahta Hai',
     aliases: ['dil chahta he', 'dch'],

@@ -2,15 +2,20 @@ import type { Server } from 'socket.io';
 import type { Room, RoundWinner, QuestionPublic } from './types.js';
 import { isCorrectAnswer } from './answerMatcher.js';
 import { getRoomPublic } from './roomManager.js';
+import { registerRoundImage } from './imageProxy.js';
 
 const DEFAULT_ROUND_TIME = 25; // fallback seconds per round
 const BETWEEN_ROUND_TIME = 5; // seconds to show answer
 
 export function getQuestionPublic(room: Room): QuestionPublic | null {
   if (!room.currentQuestion) return null;
+  // Never expose the question id or source image URL — both can be traced back
+  // to the answer (public repo question ids, Wikipedia filenames). The client
+  // only ever sees an opaque token pointing at the server's image proxy.
+  if (!room.currentImageToken) room.currentImageToken = registerRoundImage(room.currentQuestion);
   return {
-    id: room.currentQuestion.id,
-    imageUrl: room.currentQuestion.imageUrl,
+    id: room.currentImageToken,
+    imageUrl: `/img/${room.currentImageToken}`,
     category: room.currentQuestion.category,
     difficulty: room.currentQuestion.difficulty,
     hint: room.currentQuestion.hint,
@@ -45,6 +50,7 @@ export function startRound(io: Server, room: Room): void {
 
   const roundTime = room.settings.roundTime || DEFAULT_ROUND_TIME;
   room.currentQuestion = room.questions[room.currentQuestionIndex];
+  room.currentImageToken = registerRoundImage(room.currentQuestion);
   room.roundWinners = [];
   room.state = 'playing';
   room.timeRemaining = roundTime;

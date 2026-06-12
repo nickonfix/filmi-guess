@@ -1,7 +1,7 @@
 'use client';
 import { useState, useEffect } from 'react';
 import { useGameStore } from '@/store/gameStore';
-import { getSocket } from '@/lib/socket';
+import { getSocket, getServerUrl } from '@/lib/socket';
 import { leaveRoom } from '@/lib/leaveRoom';
 import { getSavedName, getSavedToken, saveToken } from '@/lib/playerName';
 import AnswerInput from './AnswerInput';
@@ -23,6 +23,12 @@ const DIFFICULTY_COLORS: Record<string, string> = {
   medium: 'text-warning-deep bg-warning-soft',
   hard: 'text-error-deep bg-error-soft',
 };
+
+// Round images come from the server's image proxy as relative paths
+// (`/img/<token>`) — point them at the socket server's origin.
+function resolveImageUrl(url: string): string {
+  return url.startsWith('/') ? `${getServerUrl()}${url}` : url;
+}
 
 function JoinGameBanner() {
   const store = useGameStore();
@@ -122,12 +128,22 @@ export default function GameBoard() {
           {/* Question image */}
           <div className="card-md relative overflow-hidden">
             {currentQuestion ? (
-              <div className="relative w-full" style={{ paddingBottom: '75%' }}>
+              <div className="relative w-full overflow-hidden bg-canvas-soft-2" style={{ paddingBottom: '75%' }}>
+                {/* Blurred fill so the contained image never sits on bare letterbox bars */}
                 {/* eslint-disable-next-line @next/next/no-img-element */}
                 <img
-                  src={currentQuestion.imageUrl}
+                  src={resolveImageUrl(currentQuestion.imageUrl)}
+                  alt=""
+                  aria-hidden
+                  className="absolute inset-0 h-full w-full scale-110 object-cover opacity-50 blur-2xl"
+                  referrerPolicy="no-referrer"
+                />
+                {/* The image itself — contained, never cropped */}
+                {/* eslint-disable-next-line @next/next/no-img-element */}
+                <img
+                  src={resolveImageUrl(currentQuestion.imageUrl)}
                   alt="Guess who?"
-                  className="absolute inset-0 h-full w-full object-cover"
+                  className="absolute inset-0 h-full w-full object-contain"
                   referrerPolicy="no-referrer"
                 />
                 {/* Category badge */}

@@ -18,6 +18,7 @@ import {
   resetRoomToLobby,
 } from './roomManager.js';
 import { startRound, handleAnswer, getQuestionPublic } from './gameEngine.js';
+import { serveImage } from './imageProxy.js';
 import type { ServerToClientEvents, ClientToServerEvents } from './types.js';
 
 const app = express();
@@ -31,6 +32,10 @@ const io = new Server<ClientToServerEvents, ServerToClientEvents>(httpServer, {
 });
 
 app.get('/health', (_req, res) => res.json({ status: 'ok' }));
+
+// Round images are served through this proxy with opaque tokens so the
+// answer-revealing source URLs never reach the client.
+app.get('/img/:token', serveImage);
 
 io.on('connection', socket => {
   console.log(`[connect] ${socket.id}`);
