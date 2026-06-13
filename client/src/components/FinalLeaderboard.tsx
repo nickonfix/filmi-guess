@@ -2,6 +2,7 @@
 import { getSocket } from '@/lib/socket';
 import { leaveRoom } from '@/lib/leaveRoom';
 import type { PlayerScore } from '@/types';
+import Avatar from './Avatar';
 
 interface Props {
   scores: PlayerScore[];
@@ -40,7 +41,13 @@ export default function FinalLeaderboard({ scores, myId }: Props) {
             <div className="relative overflow-hidden rounded-lg bg-band p-8 text-center shadow-card-dark">
               <div className="mesh-dark pointer-events-none absolute inset-0 opacity-50" />
               <div className="relative">
-                <div className="text-6xl">🏆</div>
+                {winner.avatar ? (
+                  <div className="mx-auto mb-3 w-fit rounded-full p-1 ring-2 ring-white/20">
+                    <Avatar name={winner.name} avatar={winner.avatar} size={72} />
+                  </div>
+                ) : (
+                  <div className="text-6xl">🏆</div>
+                )}
                 <p className="eyebrow mt-3 text-white/50">Winner</p>
                 <h2 className="display-lg mt-1 text-gradient-band text-gradient-animate">{winner.name}</h2>
                 <p className="mt-2 font-mono text-lg text-white/70">
@@ -62,9 +69,7 @@ export default function FinalLeaderboard({ scores, myId }: Props) {
                   }`}
                 >
                   <span className="w-7 text-center text-lg">{MEDALS[i] || <span className="font-mono text-sm text-mute">{i + 1}</span>}</span>
-                  <div className="flex h-8 w-8 items-center justify-center rounded-full bg-gradient-to-br from-ink to-hairline-strong text-sm font-semibold text-on-primary">
-                    {p.name[0].toUpperCase()}
-                  </div>
+                  <Avatar name={p.name} avatar={p.avatar} size={32} />
                   <span className="flex-1 font-medium text-ink">{p.name}</span>
                   {p.id === myId && <span className="text-xs text-mute">You</span>}
                   <span className="font-mono font-semibold text-ink">{p.score}</span>

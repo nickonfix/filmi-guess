@@ -1,5 +1,6 @@
 'use client';
 import { useGameStore } from '@/store/gameStore';
+import Avatar from './Avatar';
 
 export default function PlayerList() {
   const { room, myPlayer, guesses } = useGameStore();
@@ -21,13 +22,7 @@ export default function PlayerList() {
               } ${p.id === myPlayer?.id ? 'bg-canvas-soft shadow-hairline' : ''}`}
             >
               <span className="w-5 text-right font-mono text-xs text-mute">{i + 1}</span>
-              <div className={`flex h-6 w-6 flex-shrink-0 items-center justify-center rounded-full text-xs font-semibold ${
-                p.disconnected
-                  ? 'bg-hairline-strong text-canvas'
-                  : 'bg-gradient-to-br from-ink to-hairline-strong text-on-primary'
-              }`}>
-                {p.name[0].toUpperCase()}
-              </div>
+              <Avatar name={p.name} avatar={p.avatar} size={24} muted={p.disconnected} />
               <div className="min-w-0 flex-1">
                 <span className={`block truncate font-medium ${p.disconnected ? 'text-mute' : 'text-ink'}`}>{p.name}</span>
                 {/* Live guess feed — re-animates on every new attempt */}

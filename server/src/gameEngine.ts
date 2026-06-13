@@ -29,6 +29,7 @@ function getScores(room: Room) {
     score: p.score,
     correctAnswers: 0,
     isHost: p.isHost,
+    avatar: p.avatar,
   })).sort((a, b) => b.score - a.score);
 }
 
@@ -37,7 +38,8 @@ function getScores(room: Room) {
 // it right still banks at least one point. Deterministic — no time/streak bonus.
 const POINTS_BY_POSITION = [10, 8, 6, 4, 2];
 
-/** Points docked from a round's winnings when the player revealed the hint. */
+/** Points charged the moment a player reveals the hint — applied immediately
+ *  and allowed to push the score negative, independent of guessing right. */
 export const HINT_COST = 3;
 
 function calcPoints(position: number): number {
@@ -96,9 +98,9 @@ export function handleAnswer(io: Server, room: Room, playerId: string, answer: s
 
   player.streak++;
   const position = room.roundWinners.length + 1;
-  const base = calcPoints(position);
-  // Revealing the hint docks points but a correct guess always banks at least 1.
-  const points = room.hintUsers.has(playerId) ? Math.max(1, base - HINT_COST) : base;
+  // Full points for a correct guess — the hint cost was already charged up front
+  // when (and if) the player chose to reveal it.
+  const points = calcPoints(position);
   player.score += points;
 
   const roundTime = room.settings.roundTime || DEFAULT_ROUND_TIME;

@@ -3,11 +3,12 @@ import { useState, useEffect } from 'react';
 import { useGameStore } from '@/store/gameStore';
 import { getSocket, getServerUrl } from '@/lib/socket';
 import { leaveRoom } from '@/lib/leaveRoom';
-import { getSavedName, getSavedToken, saveToken } from '@/lib/playerName';
+import { getSavedName, getSavedToken, saveToken, getSavedAvatar } from '@/lib/playerName';
 import AnswerInput from './AnswerInput';
 import PlayerList from './PlayerList';
 import ChatPanel from './ChatPanel';
 import ThemeToggle from './ThemeToggle';
+import Avatar from './Avatar';
 import clsx from 'clsx';
 import { HINT_COST } from '@/types';
 import type { Player, QuestionPublic, RoomPublic } from '@/types';
@@ -42,7 +43,7 @@ function JoinGameBanner() {
   function joinGame() {
     const room = store.room;
     if (!savedName || !room) return;
-    getSocket().emit('room:rejoin', { code: room.code, playerName: savedName, token: getSavedToken() }, (err: string | null, data?: { room: RoomPublic; player: Player; token: string; question: QuestionPublic | null; roundNumber: number; timeLimit: number }) => {
+    getSocket().emit('room:rejoin', { code: room.code, playerName: savedName, token: getSavedToken(), avatar: getSavedAvatar() || undefined }, (err: string | null, data?: { room: RoomPublic; player: Player; token: string; question: QuestionPublic | null; roundNumber: number; timeLimit: number }) => {
       if (err || !data) return;
       saveToken(data.token);
       store.setRoom(data.room);
@@ -62,9 +63,9 @@ function JoinGameBanner() {
   );
 }
 
-/** Click-to-reveal hint. Revealing tells the server, which docks HINT_COST
- *  points from whatever this player earns if they guess right this round. */
-function HintCard({ questionId, answered }: { questionId: string; answered: boolean }) {
+/** Click-to-reveal hint. Revealing immediately charges HINT_COST points on the
+ *  server (can take your score negative), then shows the hint text. */
+function HintCard({ questionId }: { questionId: string }) {
   const [hint, setHint] = useState<string | null>(null);
   const [loading, setLoading] = useState(false);
 
@@ -77,8 +78,11 @@ function HintCard({ questionId, answered }: { questionId: string; answered: bool
   function reveal() {
     if (loading || hint) return;
     setLoading(true);
-    getSocket().emit('game:hint', (text: string) => {
-      setHint(text);
+    getSocket().emit('game:hint', (data: { hint: string; score: number }) => {
+      setHint(data.hint);
+      // Reflect the charge on our own score badge immediately.
+      const st = useGameStore.getState();
+      if (st.myPlayer) st.setMyPlayer({ ...st.myPlayer, score: data.score });
       setLoading(false);
     });
   }
@@ -88,7 +92,7 @@ function HintCard({ questionId, answered }: { questionId: string; answered: bool
       <div className="card flex items-start gap-2 px-4 py-3 animate-slide-up">
         <span className="text-warning">💡</span>
         <p className="flex-1 text-sm text-body">{hint}</p>
-        {!answered && <span className="badge flex-shrink-0 text-warning-deep">−{HINT_COST} pts</span>}
+        <span className="badge flex-shrink-0 text-warning-deep">−{HINT_COST} pts</span>
       </div>
     );
   }
@@ -102,9 +106,7 @@ function HintCard({ questionId, answered }: { questionId: string; answered: bool
       <span className="flex items-center gap-2 text-sm font-medium text-ink">
         <span>💡</span> {loading ? 'Revealing…' : 'Show hint'}
       </span>
-      <span className="text-xs text-mute">
-        {answered ? 'free — you already guessed it' : `costs ${HINT_COST} points off this round's win`}
-      </span>
+      <span className="text-xs text-mute">costs {HINT_COST} points</span>
     </button>
   );
 }
@@ -146,7 +148,8 @@ export default function GameBoard() {
               Round <span className="font-medium text-ink">{roundNumber}</span>/{totalRounds}
             </span>
             {myPlayer && (
-              <div className="flex items-center gap-1.5 rounded-sm bg-canvas px-3 py-1.5 shadow-hairline">
+              <div className="flex items-center gap-2 rounded-sm bg-canvas px-2.5 py-1 shadow-hairline">
+                <Avatar name={myPlayer.name} avatar={myPlayer.avatar} size={22} />
                 <span className="font-mono font-semibold text-ink">{myPlayer.score}</span>
                 <span className="text-xs text-mute">pts</span>
               </div>
@@ -259,7 +262,7 @@ export default function GameBoard() {
 
           {/* Hint — hidden until the player chooses to pay for it */}
           {currentQuestion && !isBetweenRounds && !spectating && (
-            <HintCard questionId={currentQuestion.id} answered={hasAnsweredThisRound} />
+            <HintCard questionId={currentQuestion.id} />
           )}
 
           {/* Answer input — hidden for spectators */}

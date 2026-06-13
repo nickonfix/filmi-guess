@@ -9,6 +9,8 @@ export interface Player {
   streak: number;
   isHost: boolean;
   disconnected?: boolean;
+  /** Optional profile-picture URL. */
+  avatar?: string;
 }
 
 export interface RoomPublic {
@@ -83,6 +85,7 @@ export interface PlayerScore {
   score: number;
   correctAnswers: number;
   isHost: boolean;
+  avatar?: string;
 }
 
 export interface ChatMessage {

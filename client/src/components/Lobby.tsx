@@ -3,9 +3,10 @@ import { useState, useEffect } from 'react';
 import { getSocket } from '@/lib/socket';
 import { leaveRoom } from '@/lib/leaveRoom';
 import { useGameStore } from '@/store/gameStore';
-import { getSavedName, getSavedToken, saveToken } from '@/lib/playerName';
+import { getSavedName, getSavedToken, saveToken, getSavedAvatar } from '@/lib/playerName';
 import { CATEGORY_META, DIFFICULTY_META } from '@/types';
 import ThemeToggle from './ThemeToggle';
+import Avatar from './Avatar';
 import clsx from 'clsx';
 import type { RoomPublic, Player, QuestionPublic, Category, RoomSettings } from '@/types';
 
@@ -53,7 +54,7 @@ export default function Lobby({ room, myPlayer }: Props) {
 
   function joinGame() {
     if (!savedName) return;
-    getSocket().emit('room:rejoin', { code: room.code, playerName: savedName, token: getSavedToken() }, (err: string | null, data?: { room: RoomPublic; player: Player; token: string; question: QuestionPublic | null; roundNumber: number; timeLimit: number }) => {
+    getSocket().emit('room:rejoin', { code: room.code, playerName: savedName, token: getSavedToken(), avatar: getSavedAvatar() || undefined }, (err: string | null, data?: { room: RoomPublic; player: Player; token: string; question: QuestionPublic | null; roundNumber: number; timeLimit: number }) => {
       if (err || !data) return;
       saveToken(data.token);
       store.setRoom(data.room);
@@ -148,9 +149,7 @@ export default function Lobby({ room, myPlayer }: Props) {
                     p.id === myPlayer?.id ? 'bg-canvas-soft shadow-hairline' : ''
                   }`}
                 >
-                  <div className="flex h-8 w-8 items-center justify-center rounded-full bg-gradient-to-br from-ink to-hairline-strong text-sm font-semibold text-on-primary">
-                    {p.name[0].toUpperCase()}
-                  </div>
+                  <Avatar name={p.name} avatar={p.avatar} size={32} />
                   <span className="font-medium text-ink">{p.name}</span>
                   {p.isHost && <span className="badge">Host</span>}
                   {p.id === myPlayer?.id && <span className="text-xs text-mute">You</span>}

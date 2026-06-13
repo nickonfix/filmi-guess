@@ -2,7 +2,7 @@
 import { useEffect } from 'react';
 import { connectSocket } from '@/lib/socket';
 import { useGameStore } from '@/store/gameStore';
-import { getSavedToken, saveToken } from '@/lib/playerName';
+import { getSavedToken, saveToken, getSavedAvatar } from '@/lib/playerName';
 import type { RoomPublic, Player, QuestionPublic } from '@/types';
 
 export function useGameSocket() {
@@ -30,7 +30,7 @@ export function useGameSocket() {
       }
 
       if (!myPlayer) return;
-      socket.emit('room:rejoin', { code: room.code, playerName: myPlayer.name, token: getSavedToken() }, (err: string | null, data?: { room: RoomPublic; player: Player; token: string; question: QuestionPublic | null; roundNumber: number; timeLimit: number }) => {
+      socket.emit('room:rejoin', { code: room.code, playerName: myPlayer.name, token: getSavedToken(), avatar: getSavedAvatar() || undefined }, (err: string | null, data?: { room: RoomPublic; player: Player; token: string; question: QuestionPublic | null; roundNumber: number; timeLimit: number }) => {
         if (!data) return;
         saveToken(data.token);
         const store = useGameStore.getState();

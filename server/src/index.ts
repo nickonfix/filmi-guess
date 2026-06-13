@@ -17,16 +17,19 @@ import {
   listPublicRooms,
   resetRoomToLobby,
 } from './roomManager.js';
-import { startRound, handleAnswer, getQuestionPublic } from './gameEngine.js';
+import { startRound, handleAnswer, getQuestionPublic, HINT_COST } from './gameEngine.js';
 import { serveImage } from './imageProxy.js';
 import { initQuestionStore, getQuestionStoreStatus } from './questionStore.js';
+import { initAvatarStore, storeAvatar } from './avatarStore.js';
 
 initQuestionStore();
+initAvatarStore();
 import type { ServerToClientEvents, ClientToServerEvents } from './types.js';
 
 const app = express();
 app.use(cors({ origin: true }));
-app.use(express.json());
+// Avatar uploads arrive as small base64 data URLs — allow a little headroom.
+app.use(express.json({ limit: '2mb' }));
 
 const httpServer = createServer(app);
 
@@ -40,12 +43,34 @@ app.get('/health', (_req, res) => res.json({ status: 'ok', questions: getQuestio
 // answer-revealing source URLs never reach the client.
 app.get('/img/:token', serveImage);
 
+// Profile-picture upload. Accepts a small image data URL, returns a hosted URL.
+app.post('/avatar', async (req, res) => {
+  try {
+    const image = (req.body as { image?: unknown })?.image;
+    if (typeof image !== 'string') { res.status(400).json({ error: 'no image' }); return; }
+    const url = await storeAvatar(image);
+    res.json({ url });
+  } catch (err) {
+    console.error('[avatar] upload error:', err);
+    res.status(400).json({ error: 'invalid image' });
+  }
+});
+
+// Accept only sane avatar references (hosted URL or a bounded data URL) so a
+// crafted socket payload can't smuggle huge or non-image strings into the room.
+function sanitizeAvatar(avatar: unknown): string | undefined {
+  if (typeof avatar !== 'string') return undefined;
+  if (avatar.length > 400_000) return undefined;
+  if (/^https?:\/\//.test(avatar) || /^data:image\/(png|jpe?g|webp);base64,/.test(avatar)) return avatar;
+  return undefined;
+}
+
 io.on('connection', socket => {
   console.log(`[connect] ${socket.id}`);
 
-  socket.on('room:create', (playerName, callback) => {
+  socket.on('room:create', ({ playerName, avatar }, callback) => {
     const name = playerName?.trim().slice(0, 20) || 'Player';
-    const { room, token } = createRoom(socket.id, name);
+    const { room, token } = createRoom(socket.id, name, sanitizeAvatar(avatar));
     socket.join(room.code);
     const roomPublic = getRoomPublic(room);
     const player = room.players.get(socket.id)!;
@@ -54,9 +79,9 @@ io.on('connection', socket => {
     console.log(`[room:create] ${name} created room ${room.code}`);
   });
 
-  socket.on('room:join', ({ code, playerName }, callback) => {
+  socket.on('room:join', ({ code, playerName, avatar }, callback) => {
     const name = playerName?.trim().slice(0, 20) || 'Player';
-    const result = joinRoom(code, socket.id, name);
+    const result = joinRoom(code, socket.id, name, sanitizeAvatar(avatar));
     if (!result) {
       callback('Room not found or the game has already finished');
       return;
@@ -94,8 +119,8 @@ io.on('connection', socket => {
     console.log(`[room:watch] ${socket.id} watching room ${room.code}`);
   });
 
-  socket.on('room:rejoin', ({ code, playerName, token }, callback) => {
-    const result = rejoinRoom(code, playerName, token, socket.id);
+  socket.on('room:rejoin', ({ code, playerName, token, avatar }, callback) => {
+    const result = rejoinRoom(code, playerName, token, socket.id, sanitizeAvatar(avatar));
     if (!result) { callback('Room not found or game already started'); return; }
     const { room, player, token: sessionToken } = result;
     socket.join(room.code);
@@ -193,13 +218,20 @@ io.on('connection', socket => {
     }
   });
 
-  // Player asks to see the hint — mark them so their winnings get docked.
+  // Player asks to see the hint — charge HINT_COST immediately (once per round,
+  // can take the score negative), then hand over the hint text.
   socket.on('game:hint', callback => {
     if (typeof callback !== 'function') return;
     const room = getRoomByPlayerId(socket.id);
     if (!room || room.state !== 'playing' || !room.currentQuestion) return;
-    room.hintUsers.add(socket.id);
-    callback(room.currentQuestion.hint);
+    const player = room.players.get(socket.id);
+    if (!player) return;
+    if (!room.hintUsers.has(socket.id)) {
+      room.hintUsers.add(socket.id);
+      player.score -= HINT_COST;
+      io.to(room.code).emit('room:updated', getRoomPublic(room));
+    }
+    callback({ hint: room.currentQuestion.hint, score: player.score });
   });
 
   socket.on('chat:send', message => {

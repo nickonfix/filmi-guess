@@ -1,5 +1,6 @@
 const KEY = 'filmiGuess_name';
 const TOKEN_KEY = 'filmiGuess_token';
+const AVATAR_KEY = 'filmiGuess_avatar';
 
 export function getSavedName(): string {
   if (typeof window === 'undefined') return '';
@@ -19,4 +20,15 @@ export function getSavedToken(): string {
 
 export function saveToken(token: string): void {
   localStorage.setItem(TOKEN_KEY, token);
+}
+
+// Profile-picture URL (hosted on the server, or an inline data URL in dev).
+export function getSavedAvatar(): string {
+  if (typeof window === 'undefined') return '';
+  return localStorage.getItem(AVATAR_KEY) || '';
+}
+
+export function saveAvatar(url: string): void {
+  if (url) localStorage.setItem(AVATAR_KEY, url);
+  else localStorage.removeItem(AVATAR_KEY);
 }

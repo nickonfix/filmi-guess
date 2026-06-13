@@ -13,7 +13,7 @@ function generateCode(): string {
   return code;
 }
 
-export function createRoom(hostId: string, hostName: string): { room: Room; token: string } {
+export function createRoom(hostId: string, hostName: string, avatar?: string): { room: Room; token: string } {
   const code = generateCode();
   const settings: RoomSettings = {
     totalRounds: 10,
@@ -29,6 +29,7 @@ export function createRoom(hostId: string, hostName: string): { room: Room; toke
     score: 0,
     streak: 0,
     isHost: true,
+    avatar,
   };
 
   const token = randomUUID();
@@ -53,7 +54,7 @@ export function createRoom(hostId: string, hostName: string): { room: Room; toke
   return { room, token };
 }
 
-export function joinRoom(code: string, playerId: string, playerName: string): { room: Room; token: string } | null {
+export function joinRoom(code: string, playerId: string, playerName: string, avatar?: string): { room: Room; token: string } | null {
   const room = rooms.get(code.toUpperCase());
   // Joinable at any point while the game is live — only a finished game is closed.
   if (!room || room.state === 'finished') return null;
@@ -65,6 +66,7 @@ export function joinRoom(code: string, playerId: string, playerName: string): { 
     score: 0,
     streak: 0,
     isHost: false,
+    avatar,
   };
   room.players.set(playerId, player);
 
@@ -104,7 +106,7 @@ export function markPlayerDisconnected(room: Room, playerId: string): void {
   if (player) player.disconnected = true;
 }
 
-export function rejoinRoom(code: string, playerName: string, token: string, newSocketId: string): { room: Room; player: Player; token: string } | null {
+export function rejoinRoom(code: string, playerName: string, token: string, newSocketId: string, avatar?: string): { room: Room; player: Player; token: string } | null {
   const room = rooms.get(code.toUpperCase());
   if (!room) return null;
 
@@ -119,6 +121,7 @@ export function rejoinRoom(code: string, playerName: string, token: string, newS
       room.players.delete(oldId);
       player.id = newSocketId;
       player.disconnected = false;
+      if (avatar !== undefined) player.avatar = avatar;
       room.players.set(newSocketId, player);
       return { room, player, token: expectedToken };
     }
@@ -127,7 +130,7 @@ export function rejoinRoom(code: string, playerName: string, token: string, newS
   // Completely new player — allowed any time before the game finishes (join-in-progress)
   if (room.state === 'finished' || room.players.size >= 50) return null;
   const newToken = randomUUID();
-  const player: Player = { id: newSocketId, name: playerName, score: 0, streak: 0, isHost: false };
+  const player: Player = { id: newSocketId, name: playerName, score: 0, streak: 0, isHost: false, avatar };
   room.players.set(newSocketId, player);
   room.playerTokens.set(key, newToken);
   return { room, player, token: newToken };

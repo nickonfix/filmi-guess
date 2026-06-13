@@ -3,10 +3,11 @@ import { useState, useEffect } from 'react';
 import { useRouter } from 'next/navigation';
 import { connectSocket, disconnectSocket } from '@/lib/socket';
 import { useGameStore } from '@/store/gameStore';
-import { getSavedName, saveName, saveToken } from '@/lib/playerName';
+import { getSavedName, saveName, saveToken, getSavedAvatar } from '@/lib/playerName';
 import { CATEGORY_META } from '@/types';
 import type { RoomPublic, Player, PublicRoomSummary, QuestionPublic } from '@/types';
 import ThemeToggle from './ThemeToggle';
+import ProfileButton from './ProfileButton';
 import Spotlight from './ui/Spotlight';
 import SpotlightCard from './ui/SpotlightCard';
 
@@ -15,12 +16,14 @@ export default function LandingPage() {
   const store = useGameStore();
   const [playerName, setPlayerName] = useState('');
   const [roomCode, setRoomCode] = useState('');
+  const [avatar, setAvatar] = useState('');
 
   const [kicked, setKicked] = useState(false);
 
   useEffect(() => {
     const saved = getSavedName();
     if (saved) setPlayerName(saved);
+    setAvatar(getSavedAvatar());
     if (typeof window !== 'undefined' && new URLSearchParams(window.location.search).get('kicked')) {
       setKicked(true);
       window.history.replaceState(null, '', '/');
@@ -78,7 +81,7 @@ export default function LandingPage() {
       setError('Server is waking up — please tap Create again.');
       setLoading(false);
     }, 12000);
-    socket.emit('room:create', name, (data: { code: string; room: RoomPublic; player: Player; token: string }) => {
+    socket.emit('room:create', { playerName: name, avatar: avatar || undefined }, (data: { code: string; room: RoomPublic; player: Player; token: string }) => {
       if (settled) return;
       settled = true;
       clearTimeout(timeout);
@@ -107,7 +110,7 @@ export default function LandingPage() {
       setError('Server is waking up — please tap Join again.');
       setLoading(false);
     }, 12000);
-    socket.emit('room:join', { code: targetCode, playerName: name }, (err: string | null, data?: { room: RoomPublic; player: Player; token: string; question: QuestionPublic | null; roundNumber: number; timeLimit: number; timeRemaining: number }) => {
+    socket.emit('room:join', { code: targetCode, playerName: name, avatar: avatar || undefined }, (err: string | null, data?: { room: RoomPublic; player: Player; token: string; question: QuestionPublic | null; roundNumber: number; timeLimit: number; timeRemaining: number }) => {
       if (settled) return;
       settled = true;
       clearTimeout(timeout);
@@ -151,6 +154,7 @@ export default function LandingPage() {
             </span>
             <button onClick={openBrowse} className="nav-cta-ghost hidden sm:inline-flex">Browse rooms</button>
             <ThemeToggle />
+            <ProfileButton name={playerName} avatar={avatar} onChange={setAvatar} />
             <button onClick={() => startCreate()} className="nav-cta-signup">Play now</button>
           </div>
         </nav>
@@ -318,9 +322,13 @@ export default function LandingPage() {
                 {mode === 'create' && (
                   <div className="space-y-5">
                     <button onClick={() => setMode('home')} className="text-sm font-medium text-mute transition-colors hover:text-ink">← Back</button>
-                    <div className="rounded-md bg-canvas-soft py-5 text-center shadow-hairline">
+                    <div className="flex flex-col items-center rounded-md bg-canvas-soft py-5 text-center shadow-hairline">
+                      <div className="mb-3">
+                        <ProfileButton name={playerName} avatar={avatar} onChange={setAvatar} size={56} />
+                      </div>
                       <p className="eyebrow mb-1.5">Playing as</p>
                       <p className="display-md text-ink">{playerName || '…'}</p>
+                      <p className="mt-1 text-xs text-mute">Tap the photo to {avatar ? 'change' : 'add'} it</p>
                     </div>
                     {error && <p className="text-sm text-error">{error}</p>}
                     <button onClick={handleCreate} disabled={loading} className="btn-primary btn-shimmer w-full">

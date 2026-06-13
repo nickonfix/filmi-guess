@@ -9,6 +9,8 @@ export interface Player {
   streak: number;
   isHost: boolean;
   disconnected?: boolean;
+  /** Optional profile-picture URL (Supabase Storage URL or inline data URL). */
+  avatar?: string;
 }
 
 /** Percentages (0–100) of the original image to KEEP. Used to cut the
@@ -111,14 +113,14 @@ export interface PlayerGuess {
 }
 
 export interface ClientToServerEvents {
-  'room:create': (playerName: string, callback: (data: { code: string; room: RoomPublic; player: Player; token: string }) => void) => void;
-  'room:join': (data: { code: string; playerName: string }, callback: (err: string | null, data?: { room: RoomPublic; player: Player; token: string; question: QuestionPublic | null; roundNumber: number; timeLimit: number; timeRemaining: number }) => void) => void;
-  'room:rejoin': (data: { code: string; playerName: string; token: string }, callback: (err: string | null, data?: { room: RoomPublic; player: Player; token: string; question: QuestionPublic | null; roundNumber: number; timeLimit: number }) => void) => void;
+  'room:create': (data: { playerName: string; avatar?: string }, callback: (data: { code: string; room: RoomPublic; player: Player; token: string }) => void) => void;
+  'room:join': (data: { code: string; playerName: string; avatar?: string }, callback: (err: string | null, data?: { room: RoomPublic; player: Player; token: string; question: QuestionPublic | null; roundNumber: number; timeLimit: number; timeRemaining: number }) => void) => void;
+  'room:rejoin': (data: { code: string; playerName: string; token: string; avatar?: string }, callback: (err: string | null, data?: { room: RoomPublic; player: Player; token: string; question: QuestionPublic | null; roundNumber: number; timeLimit: number }) => void) => void;
   'room:watch': (data: { code: string }, callback: (err: string | null, data?: { room: RoomPublic; question: QuestionPublic | null; roundNumber: number; timeLimit: number }) => void) => void;
   'game:start': () => void;
   'game:play_again': () => void;
   'game:answer': (answer: string) => void;
-  'game:hint': (callback: (hint: string) => void) => void;
+  'game:hint': (callback: (data: { hint: string; score: number }) => void) => void;
   'chat:send': (message: string) => void;
   'room:update_settings': (settings: Partial<RoomSettings>, callback?: (err: string | null) => void) => void;
   'room:kick': (playerId: string) => void;
@@ -150,6 +152,7 @@ export interface PlayerScore {
   score: number;
   correctAnswers: number;
   isHost: boolean;
+  avatar?: string;
 }
 
 export interface ChatMessage {
