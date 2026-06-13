@@ -11,12 +11,21 @@ import ProfileButton from './ProfileButton';
 import Spotlight from './ui/Spotlight';
 import SpotlightCard from './ui/SpotlightCard';
 
+// Random placeholder names — varied/international, picked fresh on each load.
+const NAME_SUGGESTIONS = [
+  'Alex', 'Mia', 'Leo', 'Noah', 'Emma', 'Liam', 'Olivia', 'Max', 'Zoe', 'Kai',
+  'Luca', 'Nina', 'Theo', 'Ava', 'Finn', 'Maya', 'Jack', 'Ella', 'Ben', 'Chloe',
+  'Ryan', 'Sofia', 'Owen', 'Ivy', 'Felix', 'Ruby', 'Hugo', 'Lily', 'Sam', 'Nora',
+  'Milo', 'Aria', 'Eli', 'Luna', 'Jude', 'Cleo', 'Otto', 'Esme', 'Rio', 'Wren',
+];
+
 export default function LandingPage() {
   const router = useRouter();
   const store = useGameStore();
   const [playerName, setPlayerName] = useState('');
   const [roomCode, setRoomCode] = useState('');
   const [avatar, setAvatar] = useState('');
+  const [namePlaceholder, setNamePlaceholder] = useState('Alex');
 
   const [kicked, setKicked] = useState(false);
 
@@ -24,6 +33,7 @@ export default function LandingPage() {
     const saved = getSavedName();
     if (saved) setPlayerName(saved);
     setAvatar(getSavedAvatar());
+    setNamePlaceholder(NAME_SUGGESTIONS[Math.floor(Math.random() * NAME_SUGGESTIONS.length)]);
     if (typeof window !== 'undefined' && new URLSearchParams(window.location.search).get('kicked')) {
       setKicked(true);
       window.history.replaceState(null, '', '/');
@@ -293,7 +303,7 @@ export default function LandingPage() {
                         onChange={e => setPlayerName(e.target.value)}
                         onKeyDown={e => e.key === 'Enter' && playerName.trim() && setMode('create')}
                         maxLength={20}
-                        placeholder="e.g. Priya"
+                        placeholder={`e.g. ${namePlaceholder}`}
                         className="input-field-lg"
                       />
                     </div>
