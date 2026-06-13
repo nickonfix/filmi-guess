@@ -1,17 +1,18 @@
 'use client';
 import { useGameStore } from '@/store/gameStore';
+import clsx from 'clsx';
 import Avatar from './Avatar';
 
-export default function PlayerList() {
+export default function PlayerList({ className }: { className?: string }) {
   const { room, myPlayer, guesses } = useGameStore();
   if (!room) return null;
 
   const sorted = [...room.players].sort((a, b) => b.score - a.score);
 
   return (
-    <div className="card p-4">
-      <h3 className="eyebrow mb-3">Scores</h3>
-      <div className="space-y-1">
+    <div className={clsx('card flex flex-col p-4', className)}>
+      <h3 className="eyebrow mb-3 flex-shrink-0">Scores</h3>
+      <div className="min-h-0 flex-1 space-y-1 overflow-y-auto">
         {sorted.map((p, i) => {
           const guess = guesses[p.id];
           return (

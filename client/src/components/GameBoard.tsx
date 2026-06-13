@@ -156,10 +156,10 @@ export default function GameBoard() {
     : 'bg-error';
 
   return (
-    <div className={clsx('flex min-h-screen flex-col bg-canvas-soft', spectating && 'pb-16')}>
+    <div className="flex h-[100dvh] flex-col overflow-hidden bg-canvas-soft">
       {/* Top bar */}
-      <header className="sticky top-0 z-20 border-b border-hairline bg-canvas-soft/85 backdrop-blur-md">
-        <div className="mx-auto flex h-16 max-w-page items-center justify-between px-4 sm:px-6">
+      <header className="z-20 flex-shrink-0 border-b border-hairline bg-canvas-soft/85 backdrop-blur-md">
+        <div className="mx-auto flex h-14 max-w-page items-center justify-between px-4 sm:h-16 sm:px-6">
           <span className="text-lg font-semibold tracking-[-0.02em] text-ink">
             Filmi<span className="text-gradient">Guess</span>
           </span>
@@ -199,13 +199,17 @@ export default function GameBoard() {
         </div>
       </header>
 
-      <div className="mx-auto flex w-full max-w-page flex-1 flex-col gap-6 px-4 py-6 sm:px-6 lg:flex-row">
+      <div className={clsx(
+        'mx-auto flex w-full min-h-0 max-w-page flex-1 flex-col gap-3 px-3 py-3 sm:px-6 lg:flex-row lg:gap-6 lg:py-4',
+        spectating && 'pb-20',
+      )}>
         {/* Main game area */}
-        <div className="flex flex-1 flex-col gap-4">
-          {/* Question image */}
-          <div className="card-md relative overflow-hidden">
+        <div className="flex min-h-0 flex-1 flex-col gap-3">
+          {/* Question image — flexes to fill on desktop, capped on mobile so the
+              answer input always stays above the on-screen keyboard. */}
+          <div className="card-md relative w-full flex-shrink-0 overflow-hidden bg-canvas-soft-2 h-[40vh] lg:h-auto lg:min-h-0 lg:flex-1">
             {currentQuestion ? (
-              <div className="relative w-full overflow-hidden bg-canvas-soft-2" style={{ paddingBottom: '75%' }}>
+              <>
                 {/* Blurred fill so the contained image never sits on bare letterbox bars */}
                 {/* eslint-disable-next-line @next/next/no-img-element */}
                 <img
@@ -240,7 +244,7 @@ export default function GameBoard() {
                 </div>
                 {/* Between rounds overlay */}
                 {isBetweenRounds && lastRoundAnswer && (
-                  <div className="absolute inset-0 z-10 flex flex-col items-center justify-center gap-4 bg-black/90 px-4 backdrop-blur-sm">
+                  <div className="absolute inset-0 z-10 flex flex-col items-center justify-center gap-4 overflow-y-auto bg-black/90 px-4 py-6 backdrop-blur-sm">
                     <div className="text-center">
                       <p className="eyebrow mb-1 text-white/50">The answer was</p>
                       <p className="display-md leading-tight text-gradient-band text-gradient-animate">{lastRoundAnswer}</p>
@@ -275,30 +279,32 @@ export default function GameBoard() {
                     )}
                   </div>
                 )}
-              </div>
+              </>
             ) : (
-              <div className="relative flex items-center justify-center bg-canvas-soft-2" style={{ paddingBottom: '75%' }}>
-                <div className="absolute inset-0 flex flex-col items-center justify-center text-mute">
-                  <div className="mb-2 text-4xl">🎬</div>
-                  <p className="font-mono text-sm">Loading question…</p>
-                </div>
+              <div className="absolute inset-0 flex flex-col items-center justify-center text-mute">
+                <div className="mb-2 text-4xl">🎬</div>
+                <p className="font-mono text-sm">Loading question…</p>
               </div>
             )}
           </div>
 
           {/* Hint — hidden until the player chooses to pay for it */}
           {currentQuestion && !isBetweenRounds && !spectating && (
-            <HintCard questionId={currentQuestion.id} />
+            <div className="flex-shrink-0">
+              <HintCard questionId={currentQuestion.id} />
+            </div>
           )}
 
           {/* Answer input — hidden for spectators */}
           {!isBetweenRounds && !spectating && (
-            <AnswerInput disabled={hasAnsweredThisRound} />
+            <div className="flex-shrink-0">
+              <AnswerInput disabled={hasAnsweredThisRound} />
+            </div>
           )}
 
-          {/* Winners this round — show only that they guessed + how fast, never the answer text */}
+          {/* Winners this round (desktop only — mobile shows it in the score list) */}
           {roundWinners.length > 0 && (
-            <div className="card space-y-2 p-4">
+            <div className="hidden max-h-32 flex-shrink-0 space-y-2 overflow-y-auto p-4 lg:block card">
               {roundWinners.map(w => (
                 <div key={w.playerId} className="flex animate-slide-up items-center gap-3 text-sm">
                   <span className="text-lg">{w.position === 1 ? '🥇' : w.position === 2 ? '🥈' : '🥉'}</span>
@@ -312,9 +318,13 @@ export default function GameBoard() {
         </div>
 
         {/* Sidebar — scores always visible; chat shows here on desktop when open */}
-        <div className="flex flex-col gap-4 lg:w-72">
-          <PlayerList />
-          {isDesktop && chatOpen && <ChatPanel onClose={() => setChatOpen(false)} />}
+        <div className="flex min-h-0 flex-shrink-0 flex-col gap-3 max-lg:max-h-[34vh] lg:w-72 lg:gap-4">
+          <PlayerList className="min-h-0 flex-1" />
+          {isDesktop && chatOpen && (
+            <div className="flex-shrink-0">
+              <ChatPanel onClose={() => setChatOpen(false)} />
+            </div>
+          )}
         </div>
       </div>
 
