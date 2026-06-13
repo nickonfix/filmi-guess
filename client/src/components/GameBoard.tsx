@@ -8,7 +8,6 @@ import AnswerInput from './AnswerInput';
 import PlayerList from './PlayerList';
 import ChatPanel from './ChatPanel';
 import ThemeToggle from './ThemeToggle';
-import Avatar from './Avatar';
 import clsx from 'clsx';
 import { HINT_COST } from '@/types';
 import type { Player, QuestionPublic, RoomPublic } from '@/types';
@@ -121,10 +120,31 @@ export default function GameBoard() {
     roundWinners,
     lastRoundAnswer,
     room,
-    myPlayer,
     hasAnsweredThisRound,
     spectating,
+    chatMessages,
   } = useGameStore();
+
+  // Chat panel: open by default on desktop, collapsed on mobile. `isDesktop`
+  // drives where the panel renders (sidebar vs. bottom-sheet drawer).
+  const [isDesktop, setIsDesktop] = useState(false);
+  const [chatOpen, setChatOpen] = useState(false);
+  const [seenCount, setSeenCount] = useState(0);
+
+  useEffect(() => {
+    const mq = window.matchMedia('(min-width: 1024px)');
+    setIsDesktop(mq.matches);
+    setChatOpen(mq.matches);
+    const onChange = (e: MediaQueryListEvent) => setIsDesktop(e.matches);
+    mq.addEventListener('change', onChange);
+    return () => mq.removeEventListener('change', onChange);
+  }, []);
+
+  // Track unread messages so a closed chat shows a notification dot.
+  useEffect(() => {
+    if (chatOpen) setSeenCount(chatMessages.length);
+  }, [chatOpen, chatMessages.length]);
+  const unread = !chatOpen && chatMessages.length > seenCount;
 
   const isBetweenRounds = room?.state === 'between_rounds';
   const timerPct = timeLimit > 0 ? (timeRemaining / timeLimit) * 100 : 0;
@@ -147,13 +167,19 @@ export default function GameBoard() {
             <span className="font-mono text-sm text-mute">
               Round <span className="font-medium text-ink">{roundNumber}</span>/{totalRounds}
             </span>
-            {myPlayer && (
-              <div className="flex items-center gap-2 rounded-sm bg-canvas px-2.5 py-1 shadow-hairline">
-                <Avatar name={myPlayer.name} avatar={myPlayer.avatar} size={22} />
-                <span className="font-mono font-semibold text-ink">{myPlayer.score}</span>
-                <span className="text-xs text-mute">pts</span>
-              </div>
-            )}
+            <button
+              onClick={() => setChatOpen(o => !o)}
+              aria-pressed={chatOpen}
+              title={chatOpen ? 'Hide chat' : 'Show chat'}
+              className={clsx(
+                'relative flex h-8 items-center gap-1.5 rounded-sm px-3 text-sm font-medium transition-colors',
+                chatOpen ? 'bg-primary text-on-primary' : 'bg-canvas text-ink shadow-hairline hover:bg-canvas-soft',
+              )}
+            >
+              <ChatIcon />
+              <span className="hidden sm:inline">Chat</span>
+              {unread && <span className="absolute -right-1 -top-1 h-2.5 w-2.5 rounded-full bg-error ring-2 ring-canvas-soft" />}
+            </button>
             <ThemeToggle />
             <button
               onClick={leaveRoom}
@@ -285,14 +311,42 @@ export default function GameBoard() {
           )}
         </div>
 
-        {/* Sidebar */}
+        {/* Sidebar — scores always visible; chat shows here on desktop when open */}
         <div className="flex flex-col gap-4 lg:w-72">
           <PlayerList />
-          <ChatPanel />
+          {isDesktop && chatOpen && <ChatPanel onClose={() => setChatOpen(false)} />}
         </div>
       </div>
 
+      {/* Mobile chat — slide-up bottom sheet over the board */}
+      {!isDesktop && (
+        <div
+          className={clsx(
+            'fixed inset-0 z-40 lg:hidden transition-opacity duration-300',
+            chatOpen ? 'opacity-100' : 'pointer-events-none opacity-0',
+          )}
+        >
+          <div className="absolute inset-0 bg-black/40" onClick={() => setChatOpen(false)} />
+          <div
+            className={clsx(
+              'absolute inset-x-0 bottom-0 px-2 pb-2 transition-transform duration-300',
+              chatOpen ? 'translate-y-0' : 'translate-y-full',
+            )}
+          >
+            <ChatPanel className="h-[60vh] rounded-b-none" onClose={() => setChatOpen(false)} />
+          </div>
+        </div>
+      )}
+
       {spectating && <JoinGameBanner />}
     </div>
+  );
+}
+
+function ChatIcon() {
+  return (
+    <svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" aria-hidden="true">
+      <path d="M21 11.5a8.38 8.38 0 0 1-.9 3.8 8.5 8.5 0 0 1-7.6 4.7 8.38 8.38 0 0 1-3.8-.9L3 21l1.9-5.7a8.38 8.38 0 0 1-.9-3.8 8.5 8.5 0 0 1 4.7-7.6 8.38 8.38 0 0 1 3.8-.9h.5a8.48 8.48 0 0 1 8 8v.5z" />
+    </svg>
   );
 }

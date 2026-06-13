@@ -4,7 +4,14 @@ import { useGameStore } from '@/store/gameStore';
 import { getSocket } from '@/lib/socket';
 import clsx from 'clsx';
 
-export default function ChatPanel() {
+interface Props {
+  /** Override the container classes (e.g. for the mobile bottom sheet). */
+  className?: string;
+  /** When provided, renders a close button in the header. */
+  onClose?: () => void;
+}
+
+export default function ChatPanel({ className, onClose }: Props) {
   const { chatMessages, myPlayer } = useGameStore();
   const listRef = useRef<HTMLDivElement>(null);
   const [text, setText] = useState('');
@@ -24,17 +31,32 @@ export default function ChatPanel() {
   }
 
   return (
-    <div className="card flex h-72 flex-col p-4">
-      <h3 className="eyebrow mb-3 flex-shrink-0">Chat</h3>
+    <div className={clsx('card flex flex-col p-4', !className && 'h-72', className)}>
+      <div className="mb-3 flex flex-shrink-0 items-center justify-between">
+        <h3 className="eyebrow">Chat</h3>
+        {onClose && (
+          <button
+            onClick={onClose}
+            aria-label="Close chat"
+            className="rounded-md px-2 py-0.5 text-lg leading-none text-mute transition-colors hover:bg-canvas-soft hover:text-ink"
+          >
+            ✕
+          </button>
+        )}
+      </div>
       <div ref={listRef} className="flex-1 space-y-1 overflow-y-auto text-sm">
-        {chatMessages.map((msg, i) => (
-          <div key={i} className="animate-slide-up">
-            <span className={clsx('font-medium', msg.playerId === myPlayer?.id ? 'text-link' : 'text-ink')}>
-              {msg.playerName}:
-            </span>{' '}
-            <span className="text-body">{msg.message}</span>
-          </div>
-        ))}
+        {chatMessages.length === 0 ? (
+          <p className="mt-2 text-xs text-mute">No messages yet — say hi! 👋</p>
+        ) : (
+          chatMessages.map((msg, i) => (
+            <div key={i} className="animate-slide-up">
+              <span className={clsx('font-medium', msg.playerId === myPlayer?.id ? 'text-link' : 'text-ink')}>
+                {msg.playerName}:
+              </span>{' '}
+              <span className="text-body">{msg.message}</span>
+            </div>
+          ))
+        )}
       </div>
       <div className="mt-3 flex flex-shrink-0 gap-2">
         <input
