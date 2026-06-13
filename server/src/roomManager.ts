@@ -48,6 +48,7 @@ export function createRoom(hostId: string, hostName: string, avatar?: string): {
     playerTokens: new Map([[hostName.toLowerCase(), token]]),
     currentImageToken: null,
     hintUsers: new Set(),
+    roundStartedAt: 0,
   };
 
   rooms.set(code, room);
@@ -106,7 +107,7 @@ export function markPlayerDisconnected(room: Room, playerId: string): void {
   if (player) player.disconnected = true;
 }
 
-export function rejoinRoom(code: string, playerName: string, token: string, newSocketId: string, avatar?: string): { room: Room; player: Player; token: string } | null {
+export function rejoinRoom(code: string, playerName: string, token: string, newSocketId: string, avatar?: string): { room: Room; player: Player; token: string; isNew: boolean } | null {
   const room = rooms.get(code.toUpperCase());
   if (!room) return null;
 
@@ -123,7 +124,7 @@ export function rejoinRoom(code: string, playerName: string, token: string, newS
       player.disconnected = false;
       if (avatar !== undefined) player.avatar = avatar;
       room.players.set(newSocketId, player);
-      return { room, player, token: expectedToken };
+      return { room, player, token: expectedToken, isNew: false };
     }
   }
 
@@ -133,7 +134,7 @@ export function rejoinRoom(code: string, playerName: string, token: string, newS
   const player: Player = { id: newSocketId, name: playerName, score: 0, streak: 0, isHost: false, avatar };
   room.players.set(newSocketId, player);
   room.playerTokens.set(key, newToken);
-  return { room, player, token: newToken };
+  return { room, player, token: newToken, isNew: true };
 }
 
 export function startGame(room: Room): void {

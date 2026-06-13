@@ -65,6 +65,17 @@ function sanitizeAvatar(avatar: unknown): string | undefined {
   return undefined;
 }
 
+// Broadcast a system notice (join/leave) into the room's chat.
+function systemMessage(room: string, text: string): void {
+  io.to(room).emit('chat:message', {
+    playerId: 'system',
+    playerName: 'System',
+    message: text,
+    system: true,
+    timestamp: Date.now(),
+  });
+}
+
 io.on('connection', socket => {
   console.log(`[connect] ${socket.id}`);
 
@@ -103,6 +114,7 @@ io.on('connection', socket => {
     });
     // Notify others in the room
     socket.to(room.code).emit('room:updated', roomPublic);
+    systemMessage(room.code, `${name} joined`);
     console.log(`[room:join] ${name} joined room ${room.code} (state: ${room.state})`);
   });
 
@@ -122,7 +134,7 @@ io.on('connection', socket => {
   socket.on('room:rejoin', ({ code, playerName, token, avatar }, callback) => {
     const result = rejoinRoom(code, playerName, token, socket.id, sanitizeAvatar(avatar));
     if (!result) { callback('Room not found or game already started'); return; }
-    const { room, player, token: sessionToken } = result;
+    const { room, player, token: sessionToken, isNew } = result;
     socket.join(room.code);
     const roomPublic = getRoomPublic(room);
     callback(null, {
@@ -134,7 +146,23 @@ io.on('connection', socket => {
       timeLimit: room.settings.roundTime,
     });
     socket.to(room.code).emit('room:updated', roomPublic);
+    // Announce only genuinely new players (e.g. joined via link) — not reconnects.
+    if (isNew) systemMessage(room.code, `${player.name} joined`);
     console.log(`[room:rejoin] ${playerName} rejoined room ${room.code} (score: ${player.score})`);
+  });
+
+  // Explicit, intentional leave (the Leave button) — remove and announce right
+  // away, rather than waiting out the disconnect grace period.
+  socket.on('room:leave', () => {
+    const room = getRoomByPlayerId(socket.id);
+    if (!room) return;
+    const name = room.players.get(socket.id)?.name;
+    socket.leave(room.code);
+    removePlayer(room, socket.id);
+    if (room.players.size > 0) {
+      io.to(room.code).emit('room:updated', getRoomPublic(room));
+      if (name) systemMessage(room.code, `${name} left`);
+    }
   });
 
   socket.on('rooms:list', callback => {
@@ -257,6 +285,7 @@ io.on('connection', socket => {
       // Lobby with others still present — remove immediately so the player list updates.
       removePlayer(room, socket.id);
       io.to(room.code).emit('room:updated', getRoomPublic(room));
+      systemMessage(room.code, `${playerName} left`);
     } else {
       // Either a game in progress, or the last person in a lobby. Don't tear the room
       // down on a transient disconnect (tab blur, phone sleep, network blip) — that's
@@ -271,7 +300,12 @@ io.on('connection', socket => {
         const still = room.players.get(oldId);
         if (still?.disconnected) {
           removePlayer(room, oldId);
-          if (room.players.size > 0) io.to(room.code).emit('room:updated', getRoomPublic(room));
+          if (room.players.size > 0) {
+            io.to(room.code).emit('room:updated', getRoomPublic(room));
+            // Announce the departure only once they've genuinely gone (didn't reconnect
+            // within the grace window) — avoids "left" spam on transient blips.
+            systemMessage(room.code, `${playerName} left`);
+          }
         }
       }, 120_000);
     }

@@ -59,6 +59,7 @@ export function startRound(io: Server, room: Room): void {
   room.roundWinners = [];
   room.state = 'playing';
   room.timeRemaining = roundTime;
+  room.roundStartedAt = Date.now();
 
   const questionPublic = getQuestionPublic(room);
 
@@ -103,8 +104,8 @@ export function handleAnswer(io: Server, room: Room, playerId: string, answer: s
   const points = calcPoints(position);
   player.score += points;
 
-  const roundTime = room.settings.roundTime || DEFAULT_ROUND_TIME;
-  const timeTaken = Math.max(0, roundTime - room.timeRemaining);
+  // Precise elapsed time (seconds, 3-decimal) measured from the round start.
+  const timeTaken = Math.round(Math.max(0, Date.now() - room.roundStartedAt)) / 1000;
 
   const winner: RoundWinner = {
     playerId,

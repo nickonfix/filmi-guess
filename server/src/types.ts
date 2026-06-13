@@ -62,6 +62,8 @@ export interface Room {
   currentImageToken: string | null;
   /** Players who revealed the hint this round — their winnings are docked. */
   hintUsers: Set<string>;
+  /** Wall-clock ms when the current round started — used for sub-second timing. */
+  roundStartedAt: number;
 }
 
 export interface RoomSettings {
@@ -119,6 +121,7 @@ export interface ClientToServerEvents {
   'room:watch': (data: { code: string }, callback: (err: string | null, data?: { room: RoomPublic; question: QuestionPublic | null; roundNumber: number; timeLimit: number }) => void) => void;
   'game:start': () => void;
   'game:play_again': () => void;
+  'room:leave': () => void;
   'game:answer': (answer: string) => void;
   'game:hint': (callback: (data: { hint: string; score: number }) => void) => void;
   'chat:send': (message: string) => void;
@@ -160,5 +163,7 @@ export interface ChatMessage {
   playerName: string;
   message: string;
   isCorrect?: boolean;
+  /** System notice (e.g. join/leave) — rendered differently from player chat. */
+  system?: boolean;
   timestamp: number;
 }

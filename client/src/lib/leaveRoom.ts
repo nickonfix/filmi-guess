@@ -1,13 +1,21 @@
-import { disconnectSocket } from './socket';
+import { getSocket, disconnectSocket } from './socket';
 
 /**
- * Leave the current room: drop the socket connection (so the server removes the
- * player) and return to the landing page. The hard navigation wipes all in-memory
- * game state, so there's nothing else to reset.
+ * Leave the current room: tell the server explicitly (so it removes the player
+ * and announces "X left" immediately, rather than waiting out the disconnect
+ * grace period), then drop the socket and return to the landing page. The short
+ * delay lets the leave packet flush before we disconnect.
  */
 export function leaveRoom(): void {
-  disconnectSocket();
-  if (typeof window !== 'undefined') {
-    window.location.href = '/';
+  try {
+    getSocket().emit('room:leave');
+  } catch {
+    /* ignore — we disconnect either way */
   }
+  setTimeout(() => {
+    disconnectSocket();
+    if (typeof window !== 'undefined') {
+      window.location.href = '/';
+    }
+  }, 120);
 }

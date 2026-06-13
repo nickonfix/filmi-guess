@@ -260,7 +260,7 @@ export default function GameBoard() {
                           <span className="text-lg font-semibold text-white">{roundWinners[0].playerName}</span>
                           <span className="font-mono text-sm font-medium text-success">+{roundWinners[0].pointsEarned}</span>
                         </div>
-                        <p className="mt-0.5 text-xs text-white/40">guessed it in {roundWinners[0].timeTaken}s</p>
+                        <p className="mt-0.5 text-xs text-white/40">guessed it {roundWinners[0].timeTaken.toFixed(3)}s</p>
                       </div>
                     ) : (
                       <div className="text-center">
@@ -309,7 +309,7 @@ export default function GameBoard() {
                 <div key={w.playerId} className="flex animate-slide-up items-center gap-3 text-sm">
                   <span className="text-lg">{w.position === 1 ? '🥇' : w.position === 2 ? '🥈' : '🥉'}</span>
                   <span className="font-medium text-ink">{w.playerName}</span>
-                  <span className="text-mute">guessed it in {w.timeTaken}s</span>
+                  <span className="text-mute">guessed it {w.timeTaken.toFixed(3)}s</span>
                   <span className="ml-auto font-mono font-semibold text-success-deep">+{w.pointsEarned}</span>
                 </div>
               ))}

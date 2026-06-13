@@ -30,7 +30,7 @@ export default function PlayerList({ className }: { className?: string }) {
                 {guess && (
                   guess.isCorrect ? (
                     <span key={guess.timestamp} className="block animate-slide-up truncate text-xs font-medium text-success-deep">
-                      ✓ guessed it in {guess.timeTaken}s
+                      ✓ guessed it {(guess.timeTaken ?? 0).toFixed(3)}s
                     </span>
                   ) : (
                     <span key={guess.timestamp} className="block animate-slide-up truncate text-xs text-mute">

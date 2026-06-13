@@ -93,6 +93,8 @@ export interface ChatMessage {
   playerName: string;
   message: string;
   isCorrect?: boolean;
+  /** System notice (e.g. join/leave) — rendered differently from player chat. */
+  system?: boolean;
   timestamp: number;
 }
 

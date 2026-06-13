@@ -48,14 +48,20 @@ export default function ChatPanel({ className, onClose }: Props) {
         {chatMessages.length === 0 ? (
           <p className="mt-2 text-xs text-mute">No messages yet — say hi! 👋</p>
         ) : (
-          chatMessages.map((msg, i) => (
-            <div key={i} className="animate-slide-up">
-              <span className={clsx('font-medium', msg.playerId === myPlayer?.id ? 'text-link' : 'text-ink')}>
-                {msg.playerName}:
-              </span>{' '}
-              <span className="text-body">{msg.message}</span>
-            </div>
-          ))
+          chatMessages.map((msg, i) =>
+            msg.system ? (
+              <div key={i} className="animate-slide-up py-0.5 text-center text-xs italic text-mute">
+                {msg.message}
+              </div>
+            ) : (
+              <div key={i} className="animate-slide-up">
+                <span className={clsx('font-medium', msg.playerId === myPlayer?.id ? 'text-link' : 'text-ink')}>
+                  {msg.playerName}:
+                </span>{' '}
+                <span className="text-body">{msg.message}</span>
+              </div>
+            ),
+          )
         )}
       </div>
       <div className="mt-3 flex flex-shrink-0 gap-2">
