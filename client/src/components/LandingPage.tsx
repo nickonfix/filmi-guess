@@ -139,8 +139,8 @@ export default function LandingPage() {
 
   return (
     <main className="relative flex min-h-screen flex-col overflow-hidden">
-      {/* Atmospheric background — dot grid + monochrome aurora + spotlight */}
-      <div className="pointer-events-none absolute inset-x-0 top-0 -z-10 h-[860px] overflow-hidden">
+      {/* Atmospheric background — dot grid + monochrome aurora + spotlight + grain */}
+      <div className="grain pointer-events-none absolute inset-x-0 top-0 -z-10 h-[860px] overflow-hidden">
         <div className="mesh mesh-drift absolute inset-0" />
         <div className="bg-grid-lines absolute inset-0" />
         <div className="bg-dots absolute inset-0" />
@@ -263,6 +263,20 @@ export default function LandingPage() {
       ) : (
         /* ============================ HERO + CARD ============================ */
         <section className="relative mx-auto w-full max-w-page px-4 pt-14 sm:px-6 sm:pt-24">
+          {/* Floating glass chips — parallax depth around the headline */}
+          <span className="float-chip left-[6%] top-[8%]" style={{ ['--rot' as string]: '-6deg' }}>
+            <span className="chip-ico">🎬</span> Lights, camera…
+          </span>
+          <span className="float-chip float-chip-2 right-[7%] top-[14%]" style={{ ['--rot' as string]: '5deg' }}>
+            <span className="chip-ico">⚡</span> 0.142s — fastest guess
+          </span>
+          <span className="float-chip float-chip-3 left-[10%] top-[42%]" style={{ ['--rot' as string]: '4deg' }}>
+            <span className="chip-ico">🏆</span> +10 points
+          </span>
+          <span className="float-chip float-chip-4 right-[9%] top-[46%]" style={{ ['--rot' as string]: '-5deg' }}>
+            <span className="chip-ico">🍿</span> Game night, sorted
+          </span>
+
           <div className="mx-auto max-w-3xl text-center">
             <div className="fade-up mb-6 flex justify-center">
               <span className="badge px-3.5 py-1.5 text-xs">
@@ -281,6 +295,18 @@ export default function LandingPage() {
               A free, real-time Bollywood &amp; Indian cinema quiz you can spin up in seconds.
               Create a room, drop the link in the group chat, and race up to 50 friends.
             </p>
+
+            {/* Social proof — overlapping avatar stack */}
+            <div className="fade-up fade-up-d2 mt-7 flex items-center justify-center gap-3">
+              <div className="avatar-stack flex">
+                {['🎭', '🎤', '🪩', '🎟️', '🌟'].map((e, i) => (
+                  <span key={i} className="bg-canvas-soft-2 text-ink shadow-hairline">{e}</span>
+                ))}
+              </div>
+              <p className="text-sm text-mute">
+                <span className="font-semibold text-ink">Thousands of rounds</span> played in living rooms &amp; group chats
+              </p>
+            </div>
           </div>
 
           {kicked && (
@@ -290,7 +316,8 @@ export default function LandingPage() {
           )}
 
           {/* Interactive auth card — the hero CTA, framed by a moving border */}
-          <div className="fade-up fade-up-d3 mx-auto mt-9 w-full max-w-md sm:mt-12">
+          <div className="fade-up fade-up-d3 relative mx-auto mt-9 w-full max-w-md sm:mt-12">
+            <div className="hero-halo" aria-hidden="true" />
             <div className="beam-border shadow-card-lg">
               <div className="beam-inner p-6 sm:p-8">
                 {mode === 'home' && (

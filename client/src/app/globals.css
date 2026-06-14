@@ -372,6 +372,50 @@ body {
   .fade-up-d5 { animation-delay: 0.5s; }
 
   /* ---------------------------------------------------------------- */
+  /* Cinematic hero chrome — floating chips, glow halo, film grain     */
+  /* ---------------------------------------------------------------- */
+
+  /* Frosted glass chips that drift behind the hero for parallax depth */
+  .float-chip {
+    @apply pointer-events-none absolute hidden items-center gap-2 rounded-pill
+      bg-canvas/70 px-3.5 py-2 text-sm font-medium text-body shadow-card
+      backdrop-blur-md md:inline-flex;
+    animation: floaty 8s ease-in-out infinite;
+    will-change: transform;
+  }
+  .float-chip .chip-ico { @apply text-base; }
+  .float-chip-2 { animation-duration: 10s; animation-delay: -2s; }
+  .float-chip-3 { animation-duration: 9s; animation-delay: -4s; }
+  .float-chip-4 { animation-duration: 11s; animation-delay: -1s; }
+
+  /* Soft pulsing halo that sits behind the CTA card */
+  .hero-halo {
+    @apply pointer-events-none absolute left-1/2 top-1/2 -z-10 h-[120%] w-[120%]
+      -translate-x-1/2 -translate-y-1/2 rounded-full;
+    background: radial-gradient(circle, rgba(var(--glow), 0.10) 0%, transparent 65%);
+    animation: heroPulse 7s ease-in-out infinite;
+    will-change: transform, opacity;
+  }
+
+  /* Cinematic film grain — extremely subtle monochrome texture */
+  .grain::after {
+    content: '';
+    position: absolute;
+    inset: 0;
+    z-index: 0;
+    pointer-events: none;
+    opacity: 0.4;
+    mix-blend-mode: soft-light;
+    background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='160' height='160'%3E%3Cfilter id='n'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='0.85' numOctaves='2' stitchTiles='stitch'/%3E%3C/filter%3E%3Crect width='100%25' height='100%25' filter='url(%23n)'/%3E%3C/svg%3E");
+  }
+
+  /* Overlapping avatar stack for social proof */
+  .avatar-stack > * {
+    @apply -ml-2.5 flex h-8 w-8 items-center justify-center rounded-full
+      text-xs font-semibold ring-2 ring-canvas first:ml-0;
+  }
+
+  /* ---------------------------------------------------------------- */
   /* Buttons                                                           */
   /* ---------------------------------------------------------------- */
   .btn {
@@ -503,12 +547,24 @@ body {
   }
 }
 
+@keyframes floaty {
+  0%, 100% { transform: translateY(0) rotate(var(--rot, 0deg)); }
+  50% { transform: translateY(-16px) rotate(var(--rot, 0deg)); }
+}
+
+@keyframes heroPulse {
+  0%, 100% { opacity: 0.55; transform: translate(-50%, -50%) scale(1); }
+  50% { opacity: 1; transform: translate(-50%, -50%) scale(1.06); }
+}
+
 @media (prefers-reduced-motion: reduce) {
   .mesh-drift,
   .text-gradient-animate,
   .marquee-track,
   .beam-border::before,
   .btn-shimmer::after,
+  .float-chip,
+  .hero-halo,
   .animate-spotlight {
     animation: none;
   }
