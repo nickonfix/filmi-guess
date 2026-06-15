@@ -10,6 +10,25 @@ import ThemeToggle from './ThemeToggle';
 import ProfileButton from './ProfileButton';
 import Spotlight from './ui/Spotlight';
 import SpotlightCard from './ui/SpotlightCard';
+import HeroDemo from './HeroDemo';
+import { useParallax } from './ui/useParallax';
+
+// Headline noun that cycles with a blur-up swap — keeps the hero alive.
+const HERO_WORDS = ['star', 'movie', 'classic', 'legend', 'icon'];
+function RotatingWord() {
+  const [i, setI] = useState(0);
+  useEffect(() => {
+    // Don't cycle the word for users who asked for reduced motion.
+    if (window.matchMedia('(prefers-reduced-motion: reduce)').matches) return;
+    const t = setInterval(() => setI(v => (v + 1) % HERO_WORDS.length), 2200);
+    return () => clearInterval(t);
+  }, []);
+  return (
+    <span className="relative inline-block">
+      <span key={i} className="word-swap">{HERO_WORDS[i]}</span>
+    </span>
+  );
+}
 
 // Random placeholder names — varied/international, picked fresh on each load.
 const NAME_SUGGESTIONS = [
@@ -22,6 +41,7 @@ const NAME_SUGGESTIONS = [
 export default function LandingPage() {
   const router = useRouter();
   const store = useGameStore();
+  const parallax = useParallax<HTMLElement>();
   const [playerName, setPlayerName] = useState('');
   const [roomCode, setRoomCode] = useState('');
   const [avatar, setAvatar] = useState('');
@@ -261,150 +281,163 @@ export default function LandingPage() {
           )}
         </section>
       ) : (
-        /* ============================ HERO + CARD ============================ */
-        <section className="relative mx-auto w-full max-w-page px-4 pt-14 sm:px-6 sm:pt-24">
-          {/* Floating glass chips — parallax depth around the headline */}
-          <span className="float-chip left-[6%] top-[8%]" style={{ ['--rot' as string]: '-6deg' }}>
-            <span className="chip-ico">🎬</span> Lights, camera…
-          </span>
-          <span className="float-chip float-chip-2 right-[7%] top-[14%]" style={{ ['--rot' as string]: '5deg' }}>
-            <span className="chip-ico">⚡</span> 0.142s — fastest guess
-          </span>
-          <span className="float-chip float-chip-3 left-[10%] top-[42%]" style={{ ['--rot' as string]: '4deg' }}>
-            <span className="chip-ico">🏆</span> +10 points
-          </span>
-          <span className="float-chip float-chip-4 right-[9%] top-[46%]" style={{ ['--rot' as string]: '-5deg' }}>
-            <span className="chip-ico">🍿</span> Game night, sorted
-          </span>
+        /* ============================ HERO + LIVE DEMO ============================ */
+        <section
+          ref={parallax.ref}
+          onPointerMove={parallax.onPointerMove}
+          onPointerLeave={parallax.onPointerLeave}
+          className="hero-root hero-perspective relative mx-auto w-full max-w-page px-4 pt-12 sm:px-6 sm:pt-16 lg:pt-20"
+        >
+          {/* Glow that follows the cursor across the hero */}
+          <div className="cursor-glow" aria-hidden="true" />
 
-          <div className="mx-auto max-w-3xl text-center">
-            <div className="fade-up mb-6 flex justify-center">
-              <span className="badge px-3.5 py-1.5 text-xs">
-                <span className="relative mr-0.5 flex h-1.5 w-1.5">
-                  <span className="absolute inline-flex h-full w-full animate-ping rounded-full bg-success opacity-60" />
-                  <span className="relative inline-flex h-1.5 w-1.5 rounded-full bg-success" />
+          <div className="relative z-10 grid grid-cols-1 items-center gap-y-12 lg:grid-cols-[1.05fr_0.95fr] lg:gap-x-12">
+            {/* ---------------- LEFT: copy + conversion card ---------------- */}
+            <div className="text-center lg:text-left">
+              <div className="fade-up mb-6 flex justify-center lg:justify-start">
+                <span className="badge px-3.5 py-1.5 text-xs">
+                  <span className="relative mr-0.5 flex h-1.5 w-1.5">
+                    <span className="absolute inline-flex h-full w-full animate-ping rounded-full bg-success opacity-60" />
+                    <span className="relative inline-flex h-1.5 w-1.5 rounded-full bg-success" />
+                  </span>
+                  Real-time multiplayer · No signup needed
                 </span>
-                Real-time multiplayer · No signup needed
-              </span>
-            </div>
-            <h1 className="display-2xl fade-up fade-up-d1 text-ink">
-              Guess the <span className="text-gradient text-gradient-animate">filmi</span> star
-              <br className="hidden sm:block" /> before anyone else.
-            </h1>
-            <p className="body-lg fade-up fade-up-d2 mx-auto mt-6 max-w-xl text-body">
-              A free, real-time Bollywood &amp; Indian cinema quiz you can spin up in seconds.
-              Create a room, drop the link in the group chat, and race up to 50 friends.
-            </p>
-
-            {/* Social proof — overlapping avatar stack */}
-            <div className="fade-up fade-up-d2 mt-7 flex items-center justify-center gap-3">
-              <div className="avatar-stack flex">
-                {['🎭', '🎤', '🪩', '🎟️', '🌟'].map((e, i) => (
-                  <span key={i} className="bg-canvas-soft-2 text-ink shadow-hairline">{e}</span>
-                ))}
               </div>
-              <p className="text-sm text-mute">
-                <span className="font-semibold text-ink">Thousands of rounds</span> played in living rooms &amp; group chats
+
+              <h1 className="display-2xl fade-up fade-up-d1 text-ink">
+                Guess the <span className="text-gradient text-gradient-animate">filmi</span>{' '}
+                <RotatingWord />
+                <br className="hidden sm:block" /> before anyone else.
+              </h1>
+
+              <p className="body-lg fade-up fade-up-d2 mx-auto mt-6 max-w-xl text-body lg:mx-0">
+                A free, real-time Bollywood &amp; Indian cinema quiz you can spin up in seconds.
+                Create a room, drop the link in the group chat, and race up to 50 friends.
               </p>
-            </div>
-          </div>
 
-          {kicked && (
-            <div className="mx-auto mt-8 max-w-md rounded-md bg-error-soft px-4 py-3 text-center text-sm text-error-deep shadow-hairline">
-              You were removed from the room by the host.
-            </div>
-          )}
+              {/* Social proof — overlapping avatar stack */}
+              <div className="fade-up fade-up-d2 mt-7 flex items-center justify-center gap-3 lg:justify-start">
+                <div className="avatar-stack flex">
+                  {['🎭', '🎤', '🪩', '🎟️', '🌟'].map((e, i) => (
+                    <span key={i} className="bg-canvas-soft-2 text-ink shadow-hairline">{e}</span>
+                  ))}
+                </div>
+                <p className="text-sm text-mute">
+                  <span className="font-semibold text-ink">Thousands of rounds</span> played in living rooms &amp; group chats
+                </p>
+              </div>
 
-          {/* Interactive auth card — the hero CTA, framed by a moving border */}
-          <div className="fade-up fade-up-d3 relative mx-auto mt-9 w-full max-w-md sm:mt-12">
-            <div className="hero-halo" aria-hidden="true" />
-            <div className="beam-border shadow-card-lg">
-              <div className="beam-inner p-6 sm:p-8">
-                {mode === 'home' && (
-                  <div className="space-y-4">
-                    <div>
-                      <label className="mb-2 block text-sm font-medium text-body">Your name</label>
-                      <input
-                        type="text"
-                        value={playerName}
-                        onChange={e => setPlayerName(e.target.value)}
-                        onKeyDown={e => e.key === 'Enter' && playerName.trim() && setMode('create')}
-                        maxLength={20}
-                        placeholder={`e.g. ${namePlaceholder}`}
-                        className="input-field-lg"
-                      />
-                    </div>
-                    {error && <p className="text-sm text-error">{error}</p>}
-                    <button
-                      onClick={() => { if (!playerName.trim()) { setError('Enter your name'); return; } setMode('create'); setError(''); }}
-                      className="btn-primary btn-shimmer w-full"
-                    >
-                      Create a room
-                    </button>
-                    <button
-                      onClick={() => { if (!playerName.trim()) { setError('Enter your name'); return; } setMode('join'); setError(''); }}
-                      className="btn-secondary w-full"
-                    >
-                      Join with a code
-                    </button>
-                    <button
-                      onClick={openBrowse}
-                      className="w-full py-1 text-sm font-medium text-mute transition-colors hover:text-ink"
-                    >
-                      Browse public rooms →
-                    </button>
-                  </div>
-                )}
+              {kicked && (
+                <div className="mx-auto mt-8 max-w-md rounded-md bg-error-soft px-4 py-3 text-center text-sm text-error-deep shadow-hairline lg:mx-0">
+                  You were removed from the room by the host.
+                </div>
+              )}
 
-                {mode === 'create' && (
-                  <div className="space-y-5">
-                    <button onClick={() => setMode('home')} className="text-sm font-medium text-mute transition-colors hover:text-ink">← Back</button>
-                    <div className="flex flex-col items-center rounded-md bg-canvas-soft py-5 text-center shadow-hairline">
-                      <div className="mb-3">
-                        <ProfileButton name={playerName} avatar={avatar} onChange={setAvatar} size={56} />
+              {/* Conversion card — the hero CTA, framed by a moving border */}
+              <div className="fade-up fade-up-d3 relative mx-auto mt-9 w-full max-w-md sm:mt-10 lg:mx-0">
+                <div className="hero-halo" aria-hidden="true" />
+                <div className="beam-border shadow-card-lg">
+                  <div className="beam-inner p-6 sm:p-7">
+                    {mode === 'home' && (
+                      <div className="space-y-4">
+                        <div>
+                          <label className="mb-2 block text-left text-sm font-medium text-body">Your name</label>
+                          <input
+                            type="text"
+                            value={playerName}
+                            onChange={e => setPlayerName(e.target.value)}
+                            onKeyDown={e => e.key === 'Enter' && playerName.trim() && setMode('create')}
+                            maxLength={20}
+                            placeholder={`e.g. ${namePlaceholder}`}
+                            className="input-field-lg"
+                          />
+                        </div>
+                        {error && <p className="text-left text-sm text-error">{error}</p>}
+                        <button
+                          onClick={() => { if (!playerName.trim()) { setError('Enter your name'); return; } setMode('create'); setError(''); }}
+                          className="btn-primary btn-shimmer w-full"
+                        >
+                          Create a room
+                        </button>
+                        <button
+                          onClick={() => { if (!playerName.trim()) { setError('Enter your name'); return; } setMode('join'); setError(''); }}
+                          className="btn-secondary w-full"
+                        >
+                          Join with a code
+                        </button>
+                        <button
+                          onClick={openBrowse}
+                          className="w-full py-1 text-sm font-medium text-mute transition-colors hover:text-ink"
+                        >
+                          Browse public rooms →
+                        </button>
                       </div>
-                      <p className="eyebrow mb-1.5">Playing as</p>
-                      <p className="display-md text-ink">{playerName || '…'}</p>
-                      <p className="mt-1 text-xs text-mute">Tap the photo to {avatar ? 'change' : 'add'} it</p>
-                    </div>
-                    {error && <p className="text-sm text-error">{error}</p>}
-                    <button onClick={handleCreate} disabled={loading} className="btn-primary btn-shimmer w-full">
-                      {loading ? 'Creating…' : 'Create & start room'}
-                    </button>
-                  </div>
-                )}
+                    )}
 
-                {mode === 'join' && (
-                  <div className="space-y-4">
-                    <button onClick={() => setMode('home')} className="text-sm font-medium text-mute transition-colors hover:text-ink">← Back</button>
-                    <div>
-                      <label className="mb-2 block text-sm font-medium text-body">Room code</label>
-                      <input
-                        type="text"
-                        value={roomCode}
-                        onChange={e => setRoomCode(e.target.value.toUpperCase())}
-                        onKeyDown={e => e.key === 'Enter' && handleJoin()}
-                        maxLength={4}
-                        placeholder="ABCD"
-                        className="input-field-lg text-center font-mono text-2xl uppercase tracking-[0.5em]"
-                      />
-                    </div>
-                    {error && <p className="text-sm text-error">{error}</p>}
-                    <button onClick={() => handleJoin()} disabled={loading} className="btn-primary btn-shimmer w-full">
-                      {loading ? 'Joining…' : 'Join room'}
-                    </button>
+                    {mode === 'create' && (
+                      <div className="space-y-5">
+                        <button onClick={() => setMode('home')} className="text-sm font-medium text-mute transition-colors hover:text-ink">← Back</button>
+                        <div className="flex flex-col items-center rounded-md bg-canvas-soft py-5 text-center shadow-hairline">
+                          <div className="mb-3">
+                            <ProfileButton name={playerName} avatar={avatar} onChange={setAvatar} size={56} />
+                          </div>
+                          <p className="eyebrow mb-1.5">Playing as</p>
+                          <p className="display-md text-ink">{playerName || '…'}</p>
+                          <p className="mt-1 text-xs text-mute">Tap the photo to {avatar ? 'change' : 'add'} it</p>
+                        </div>
+                        {error && <p className="text-sm text-error">{error}</p>}
+                        <button onClick={handleCreate} disabled={loading} className="btn-primary btn-shimmer w-full">
+                          {loading ? 'Creating…' : 'Create & start room'}
+                        </button>
+                      </div>
+                    )}
+
+                    {mode === 'join' && (
+                      <div className="space-y-4">
+                        <button onClick={() => setMode('home')} className="text-sm font-medium text-mute transition-colors hover:text-ink">← Back</button>
+                        <div>
+                          <label className="mb-2 block text-left text-sm font-medium text-body">Room code</label>
+                          <input
+                            type="text"
+                            value={roomCode}
+                            onChange={e => setRoomCode(e.target.value.toUpperCase())}
+                            onKeyDown={e => e.key === 'Enter' && handleJoin()}
+                            maxLength={4}
+                            placeholder="ABCD"
+                            className="input-field-lg text-center font-mono text-2xl uppercase tracking-[0.5em]"
+                          />
+                        </div>
+                        {error && <p className="text-sm text-error">{error}</p>}
+                        <button onClick={() => handleJoin()} disabled={loading} className="btn-primary btn-shimmer w-full">
+                          {loading ? 'Joining…' : 'Join room'}
+                        </button>
+                      </div>
+                    )}
                   </div>
-                )}
+                </div>
+
+                <p className="fade-up fade-up-d4 mt-5 text-center font-mono text-xs text-mute lg:text-left">
+                  No signup · Up to 50 players · Free forever
+                </p>
               </div>
             </div>
 
-            <p className="fade-up fade-up-d4 mt-5 text-center font-mono text-xs text-mute">
-              No signup · Up to 50 players · Free forever
-            </p>
+            {/* ---------------- RIGHT: interactive live game preview ---------------- */}
+            <div className="fade-up fade-up-d2 relative order-first lg:order-none">
+              {/* Parallax glass chips floating around the demo */}
+              <span className="float-layer -left-4 -top-3 lg:-left-8" style={{ ['--rot' as string]: '-5deg', ['--depth' as string]: '28px' }}>
+                <span className="float-chip"><span className="chip-ico">⚡</span> 0.142s — fastest guess</span>
+              </span>
+              <span className="float-layer -right-3 bottom-6 lg:-right-7" style={{ ['--rot' as string]: '5deg', ['--depth' as string]: '38px' }}>
+                <span className="float-chip"><span className="chip-ico">🏆</span> Win streak ×4</span>
+              </span>
+
+              <HeroDemo />
+            </div>
           </div>
 
           {/* Category marquee — infinite scroll with faded edges */}
-          <div className="fade-up fade-up-d5 marquee mx-auto mt-14 max-w-3xl sm:mt-16">
+          <div className="fade-up fade-up-d5 marquee relative z-10 mx-auto mt-16 max-w-3xl sm:mt-20">
             <div className="marquee-track gap-2.5 pr-2.5">
               {[...CATEGORY_META, ...CATEGORY_META].map((c, i) => (
                 <span key={`${c.id}-${i}`} className="pill-tab whitespace-nowrap">
